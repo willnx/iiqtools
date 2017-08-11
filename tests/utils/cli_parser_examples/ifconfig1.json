@@ -1,0 +1,90 @@
+{
+    "category": "cli", 
+    "command": "ifconfig", 
+    "exitcode": 0, 
+    "interfaces": {
+        "eth0": {
+            "collisions": 0, 
+            "flags": "UP BROADCAST RUNNING MULTICAST", 
+            "hwaddr": "00:50:56:B6:0C:C5", 
+            "ipv4": {
+                "10.7.216.178": {
+                    "bcast": "10.7.217.255", 
+                    "mask": "255.255.254.0"
+                }
+            }, 
+            "ipv6": {
+                "2620:0:170:9901:250:56ff:feb6:cc5/64": {
+                    "scope": "Global"
+                }, 
+                "fda7:e6ee:2e09:0:250:56ff:feb6:cc5/64": {
+                    "scope": "Global"
+                }, 
+                "fdfe:9042:c53d:0:250:56ff:feb6:cc5/64": {
+                    "scope": "Global"
+                }, 
+                "fe80::250:56ff:feb6:cc5/64": {
+                    "scope": "Link"
+                }
+            }, 
+            "link": "encap:Ethernet", 
+            "metric": 1, 
+            "mtu": 1500, 
+            "rx bytes": 2673916227, 
+            "rx packets": {
+                "dropped": 0, 
+                "errors": 0, 
+                "frame": 0, 
+                "overruns": 0, 
+                "packets": 14766139
+            }, 
+            "tx bytes": 146236859, 
+            "tx packets": {
+                "dropped": 0, 
+                "errors": 0, 
+                "frame": 0, 
+                "overruns": 0, 
+                "packets": 601762
+            }, 
+            "txqueuelen": 1000
+        }, 
+        "lo": {
+            "collisions": 0, 
+            "flags": "UP LOOPBACK RUNNING", 
+            "hwaddr": "Loopback", 
+            "ipv4": {
+                "127.0.0.1": {
+                    "mask": "255.0.0.0"
+                }
+            }, 
+            "ipv6": {
+                "::1/128": {
+                    "scope": "Host"
+                }
+            }, 
+            "link": "encap:Local", 
+            "metric": 1, 
+            "mtu": 65536, 
+            "rx bytes": 298267114, 
+            "rx packets": {
+                "dropped": 0, 
+                "errors": 0, 
+                "frame": 0, 
+                "overruns": 0, 
+                "packets": 1328245
+            }, 
+            "tx bytes": 298267114, 
+            "tx packets": {
+                "dropped": 0, 
+                "errors": 0, 
+                "frame": 0, 
+                "overruns": 0, 
+                "packets": 1328245
+            }, 
+            "txqueuelen": 0
+        }
+    }, 
+    "stderr": "", 
+    "stdout": "eth0      Link encap:Ethernet  HWaddr 00:50:56:B6:0C:C5  \n          inet addr:10.7.216.178  Bcast:10.7.217.255  Mask:255.255.254.0\n          inet6 addr: fdfe:9042:c53d:0:250:56ff:feb6:cc5/64 Scope:Global\n          inet6 addr: fda7:e6ee:2e09:0:250:56ff:feb6:cc5/64 Scope:Global\n          inet6 addr: 2620:0:170:9901:250:56ff:feb6:cc5/64 Scope:Global\n          inet6 addr: fe80::250:56ff:feb6:cc5/64 Scope:Link\n          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1\n          RX packets:14766139 errors:0 dropped:0 overruns:0 frame:0\n          TX packets:601762 errors:0 dropped:0 overruns:0 carrier:0\n          collisions:0 txqueuelen:1000 \n          RX bytes:2673916227 (2.4 GiB)  TX bytes:146236859 (139.4 MiB)\n\nlo        Link encap:Local Loopback  \n          inet addr:127.0.0.1  Mask:255.0.0.0\n          inet6 addr: ::1/128 Scope:Host\n          UP LOOPBACK RUNNING  MTU:65536  Metric:1\n          RX packets:1328245 errors:0 dropped:0 overruns:0 frame:0\n          TX packets:1328245 errors:0 dropped:0 overruns:0 carrier:0\n          collisions:0 txqueuelen:0 \n          RX bytes:298267114 (284.4 MiB)  TX bytes:298267114 (284.4 MiB)\n\n", 
+    "traceback": ""
+}

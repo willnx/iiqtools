@@ -1,0 +1,52 @@
+{
+    "category": "cli", 
+    "command": "df -P", 
+    "exitcode": 0, 
+    "filesystems": {
+        "/dev/mapper/VolGroup-lv_root": {
+            "1K-blocks": "8649736", 
+            "available": "5925368", 
+            "mounted on": "/", 
+            "used": "2278316", 
+            "used percent": "28%"
+        }, 
+        "/dev/sda1": {
+            "1K-blocks": "487652", 
+            "available": "334193", 
+            "mounted on": "/boot", 
+            "used": "127859", 
+            "used percent": "28%"
+        }, 
+        "/dev/sdb1": {
+            "1K-blocks": "66955224", 
+            "available": "62953388", 
+            "mounted on": "/datastore", 
+            "used": "594052", 
+            "used percent": "1%"
+        }, 
+        "10.25.68.52:/ifs/.ifsvar/modules/fsa": {
+            "1K-blocks": "20277760", 
+            "available": "19522560", 
+            "mounted on": "/mnt/10.25.68.52/ifs/.ifsvar/modules/fsa", 
+            "used": "755200", 
+            "used percent": "4%"
+        }, 
+        "10.25.68.52:/ifs/data/junk": {
+            "1K-blocks": "20277760", 
+            "available": "19522560", 
+            "mounted on": "/mnt/tmp", 
+            "used": "755200", 
+            "used percent": "4%"
+        }, 
+        "tmpfs": {
+            "1K-blocks": "4030688", 
+            "available": "4030688", 
+            "mounted on": "/dev/shm", 
+            "used": "0", 
+            "used percent": "0%"
+        }
+    }, 
+    "stderr": "", 
+    "stdout": "Filesystem                           1024-blocks    Used Available Capacity Mounted on\n/dev/mapper/VolGroup-lv_root             8649736 2278316   5925368      28% /\ntmpfs                                    4030688       0   4030688       0% /dev/shm\n/dev/sda1                                 487652  127859    334193      28% /boot\n/dev/sdb1                               66955224  594052  62953388       1% /datastore\n10.25.68.52:/ifs/.ifsvar/modules/fsa    20277760  755200  19522560       4% /mnt/10.25.68.52/ifs/.ifsvar/modules/fsa\n10.25.68.52:/ifs/data/junk              20277760  755200  19522560       4% /mnt/tmp\n", 
+    "traceback": ""
+}

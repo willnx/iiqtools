@@ -1,0 +1,23 @@
+{
+    "category": "cli", 
+    "command": "free -m", 
+    "exitcode": 0, 
+    "memory": {
+        "ram": {
+            "buffers": 285, 
+            "cached": 1524, 
+            "free": 5274, 
+            "shared": 619, 
+            "total": 7872, 
+            "used": 2597
+        }, 
+        "swap": {
+            "free": 1023, 
+            "total": 1023, 
+            "used": 0
+        }
+    }, 
+    "stderr": "", 
+    "stdout": "             total       used       free     shared    buffers     cached\nMem:          7872       2597       5274        619        285       1524\n-/+ buffers/cache:        787       7084\nSwap:         1023          0       1023\n", 
+    "traceback": ""
+}
