@@ -36,7 +36,7 @@ class TestGetTarfile(unittest.TestCase):
                                                   self.case_number,
                                                   the_time=self.the_time)
         tarfile_name = the_tarfile.name
-        expected_name = '{}/IIQLogs-sr{}-{}.tgz'.format(self.output_dir,
+        expected_name = '%s/IIQLogs-sr%s-%s.tgz' % (self.output_dir,
                                                         self.case_number,
                                                         self.the_time)
 
