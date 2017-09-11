@@ -14,6 +14,7 @@ Contents:
    getting_started
    scripts
    contributing
+   sourcecode
 
 Indices and tables
 ==================
