@@ -8,7 +8,7 @@ clean:
 	-rm -f tests/.coverage
 
 .PHONY: docs
-docs:
+docs: install
 	cd docs && make html
 
 build: clean

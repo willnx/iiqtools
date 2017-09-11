@@ -12,6 +12,9 @@ Contents:
    :maxdepth: 2
 
    getting_started
+   scripts
+   contributing
+   sourcecode
 
 Indices and tables
 ==================
