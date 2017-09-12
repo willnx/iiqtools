@@ -28,6 +28,7 @@ except ImportError:
 
 from iiqtools.utils import cli_parsers
 from iiqtools.utils.logger import get_logger
+from iiqtools.utils.generic import check_path
 from iiqtools.utils.shell import run_cmd
 from iiqtools.exceptions import CliError
 
@@ -74,21 +75,6 @@ def add_from_memory(the_tarfile, data_name, data):
     info.mtime = time.time()
     info.mode = int('444', 8) # everyone can read in oct, not decimal
     the_tarfile.addfile(info, StringIO(data))
-
-
-def check_path(cli_value):
-    """Validate that the supplied path is an actual file system path
-
-    :Returns: String
-
-    :param cli_value: The value supplied by the end user
-    :type cli_value: String
-    """
-    if not os.path.isdir(cli_value):
-        msg = 'Supplied value is not a directory, %s' % (cli_value)
-        raise argparse.ArgumentTypeError(msg)
-    else:
-        return cli_value
 
 
 def parse_cli(cli_args):

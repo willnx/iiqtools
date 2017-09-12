@@ -82,41 +82,6 @@ class TestAddFromMemory(unittest.TestCase):
 
         self.assertEqual(posix_oct, expected)
 
-class TestPathCallback(unittest.TestCase):
-    """A suite of tests for the iiq_gather_info.check_path function"""
-
-    def setUp(self):
-        """Runs before every test case"""
-        self.junk_file = '/tmp/asdfoowersdfuixlwles'
-
-    def tearDown(self):
-        """Runs after every test case"""
-        try:
-            os.remove(self.junk_file)
-        except OSError as doh:
-            if doh.errno == 2:
-                # No such File, ignore
-                pass
-            else:
-                raise
-
-    def test_invalid_path(self):
-        """Supplying an invalid file system path raises argparse.ArgumentTypeError"""
-        self.assertRaises(argparse.ArgumentTypeError, iiq_gather_info.check_path, 'foo')
-
-    def test_supply_directory(self):
-        """Supplying an actual directory returns that value"""
-        supplied_value = '/tmp'
-        returned_value = iiq_gather_info.check_path(supplied_value)
-
-        self.assertEqual(supplied_value, returned_value)
-
-    def test_supply_file(self):
-        """Supplying a file (not a directory) raises argparse.ArgumentTypeError"""
-        f = open(self.junk_file, 'w')
-        f.close()
-        self.assertRaises(argparse.ArgumentTypeError, iiq_gather_info.check_path, self.junk_file)
-
 
 class TestParseCli(unittest.TestCase):
     """A suite of test cases for the parse_cli function"""
