@@ -15,11 +15,14 @@ This package contains scripts to help debug and support InsightIQ.
 Installing/Upgrading
 ********************
 
-If you have access to PyPi, you should be able to simply run::
+If you have access to `PyPi <https://pypi.python.org/pypi/iiqtools>`_, you
+should be able to simply run this command on your InsightIQ instance::
 
   sudo easy_install -U iiqtools
 
-For full documentation, checkout: http://iiqtools.readthedocs.io/en/docs/getting_started.html#install-and-upgrade
+For full documentation, checkout:
+
+http://iiqtools.readthedocs.io/en/docs/getting_started.html#install-and-upgrade
 
 *************
 Documentation
@@ -28,7 +31,7 @@ Documentation
 The documentation is auto-generated upon merge to the master branch, and can
 be found at:
 
-  http://iiqtools.readthedocs.io/en/latest/index.html
+http://iiqtools.readthedocs.io/en/latest/index.html
 
 ************
 Contributing
@@ -37,4 +40,4 @@ Contributing
 Found a bug? Got a feature request? Want to add your own script?
 We love getting feedback from the community. For details checkout:
 
-  http://iiqtools.readthedocs.io/en/latest/contributing.html
+http://iiqtools.readthedocs.io/en/latest/contributing.html
