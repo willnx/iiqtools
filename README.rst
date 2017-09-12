@@ -2,7 +2,7 @@
     :target: https://travis-ci.org/willnx/iiqtools
 
 .. image:: https://readthedocs.org/projects/iiqtools/badge/
-    :target: https://readthedocs.org/projects/iiqtools/badge/?version=latest
+    :target: http://iiqtools.readthedocs.io/en/latest/?badge=latest
 
 ########
 IIQTools
