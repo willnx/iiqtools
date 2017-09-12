@@ -55,6 +55,12 @@ RHEL/CentOS/Fedora:
 - postgresql
 - redhat-rpm-config
 
+Ubuntu:
+
+- make
+- python-dev
+- postgresql
+- libpq-dev
 
 Before installing the Python dependencies, it's highly encouraged to configure a
 `Python Virtualenv <https://virtualenv.pypa.io/en/stable/>`_ for working with IIQTools.
