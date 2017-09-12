@@ -1,8 +1,8 @@
-.. image:: https://travis-ci.org/willnx/iiqtools.svg?branch=master
+.. |build-status| image:: https://travis-ci.org/willnx/iiqtools.svg?branch=master
     :target: https://travis-ci.org/willnx/iiqtools
 
-.. image:: http://iiqtools.readthedocs.io/en/latest/?badge=latest
-    :target: http://iiqtools.readthedocs.io/en/docs/index.html
+.. |docs| image:: https://readthedocs.org/projects/iiqtools/badge/
+    :target: https://readthedocs.org/projects/iiqtools/badge/?version=latest
 
 ########
 IIQTools
