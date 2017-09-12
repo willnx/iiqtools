@@ -9,7 +9,19 @@ import psycopg2
 from iiqtools.exceptions import DatabaseError
 
 
-Column = namedtuple('Column', 'name type')
+_Column = namedtuple('Column', 'name type')
+
+# This allows us to define the docstring for out namedtuple
+class Column(_Column):
+    """A database column consiting of the column's name, and it's type
+
+    :Type: namedtuple
+
+    :param name: The column's name
+
+    :param type: The database type for the given column (i.e. int, float, double)
+    """
+    pass
 
 # This database abstraction intentionally does not comply with PEP 249
 # https://www.python.org/dev/peps/pep-0249/
@@ -42,10 +54,11 @@ class Database(object):
             self.execute("SET search_path to admin,iiq,public;")
 
     def __enter__(self):
-        """Enables use of the `with` statement to auto close database connection
+        """Enables use of the ``with`` statement to auto close database connection
         https://docs.python.org/2.7/reference/datamodel.html#with-statement-context-managers
 
         Example::
+
           with Database() as db:
               print db.cluster_databases
         """
@@ -73,7 +86,8 @@ class Database(object):
             for row in db.execute("select * from some_table;"):
                 print row
 
-        If you want all the rows as a single thing, just call `list`::
+        If you want all the rows as a single thing, just use ``list``::
+
             db = Database()
             data = list(db.execute("select * from some_table;")
 
@@ -147,6 +161,7 @@ class Database(object):
 
     @property
     def isolation_level(self):
+        """Set the isolation level of your connnection to the database"""
         # To drop tables, you'll have to set isolation_level to 0 (zero)
         # https://www.postgresql.org/docs/current/static/transaction-iso.html
         return self._connection.isolation_level
@@ -191,9 +206,11 @@ class Database(object):
     def primary_key(self, table):
         """Given a table, return the primary key
 
-        NOTE: If you supply a timeseries table that DOES NOT have an EPOC timestamp
-        in the name, you will get zero results. i.e. for timeseries tables,
-        supply a table that contains the EPOC timestamps to see the primary key.
+        .. note::
+
+            If you supply a timeseries table that DOES NOT have an EPOC timestamp
+            in the name, you will get zero results. For timeseries tables,
+            supply a table that contains the EPOC timestamps to see the primary key.
 
         :Returns: Tuple of namedtuples -> (Column(name, type), Column(name, type))
 

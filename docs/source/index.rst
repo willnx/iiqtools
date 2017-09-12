@@ -11,7 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   getting_started
+   scripts
+   contributing
+   sourcecode
 
 Indices and tables
 ==================
@@ -19,4 +22,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

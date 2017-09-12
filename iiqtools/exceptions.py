@@ -4,12 +4,19 @@ Centralized location for all custom Exceptions
 """
 
 class CliError(Exception):
-    """Raised when an CLI command has a non-zero exit code
+    """Raised when an CLI command has a non-zero exit code.
 
-    :attribute command: The CLI syntax that had a non-zero exit code
-    :attribute stdout: The standard output from the command
-    :attribute stderr: The standard error from the command
-    :attribute exit_code: The exit code of the command
+    :param command: The CLI command that was ran
+    :type command: String
+
+    :param stdout: The output from the standard out stream
+    :type stdout: String
+
+    :param stderr: The output from the standard error stream
+    :type stderr: String
+
+    :param exit_code: The exit/return code from the command
+    :type exit_codee: Integer
     """
     def __init__(self, command, stdout, stderr, exit_code, message='Command Failure'):
         msg = '%s: %s' % (message, command)

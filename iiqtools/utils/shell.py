@@ -26,8 +26,26 @@ from collections import namedtuple
 
 from iiqtools.exceptions import CliError
 
-CliResult = namedtuple('CliResult', 'command stdout stderr exit_code')
+_CliResult = namedtuple('CliResult', 'command stdout stderr exit_code')
+# Enables us to create a handy docstring for Sphinx
+class CliResult(_CliResult):
+    """The outcome from running a CLI command
 
+    :Type: collections.namedtuple
+
+    :param command: The CLI command that was ran
+    :type command: String
+
+    :param stdout: The output from the standard out stream
+    :type stdout: String
+
+    :param stderr: The output from the standard error stream
+    :type stderr: String
+
+    :param exit_code: The exit/return code from the command
+    :type exit_codee: Integer
+    """
+    pass
 
 def run_cmd(cli_syntax):
     """Execute a simple CLI command.
