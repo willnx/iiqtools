@@ -20,3 +20,4 @@ within the InsightIQ virtualenv, you'll have to add this to the top of the scrip
   # package version conflicts when trying to resolve dependencies for IIQ modules.
   sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages')
   sys.path.insert(1, '/usr/share/isilon/lib/python2.7/site-packages')
+  sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages/argparse-1.2.1-py2.6.egg')

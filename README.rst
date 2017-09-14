@@ -15,10 +15,11 @@ This package contains scripts to help debug and support InsightIQ.
 Installing/Upgrading
 ********************
 
-If you have access to `PyPi <https://pypi.python.org/pypi/iiqtools>`_, you
+If you have access to `PyPi <https://pypi.python.org/pypi/iiqtools>`_ and
+`Python pip <https://pip.pypa.io/en/stable/installing/>`_ is already installed, you
 should be able to simply run this command on your InsightIQ instance::
 
-  sudo easy_install -U iiqtools
+  sudo pip install -U iiqtools
 
 For full documentation, checkout:
 
