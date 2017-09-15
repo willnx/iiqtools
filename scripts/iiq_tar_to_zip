@@ -1,0 +1,19 @@
+#!/usr/share/isilon/bin/python
+"""
+Entry point for collecting logs and config information about InsightIQ
+for remote troubleshooting.
+"""
+import sys
+# Dirty hack so we can import modules from the InsightIQ virtualenv
+# Two additions to path because InsightIQ might be running Python 2.6 or 2.7
+# The insert makes Python look at the IIQ virtualenv 1st; otherwise we'll get
+# package version conflicts when trying to resolve dependencies for IIQ modules.
+sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages')
+sys.path.insert(1, '/usr/share/isilon/lib/python2.7/site-packages')
+sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages/argparse-1.2.1-py2.6.egg')
+
+from iiqtools.iiq_tar_to_zip import main
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
