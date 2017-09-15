@@ -21,7 +21,7 @@ uninstall:
 	-pip uninstall -y iiqtools
 
 test: install
-	cd tests && nosetests -v --with-coverage --cover-package=iiqtools
+	cd iiqtools_tests && nosetests -v --with-coverage --cover-package=iiqtools
 
 lint: install
 	pylint iiqtools

@@ -12,13 +12,23 @@ for your instance of InsightIQ.
 
   The ``--upgrade`` flag is automatically ignored if you're performing an initial install
 
+Installing Python pip
+---------------------
+
+Python pip is the preferred way to install Python packages. I f your instance
+of InsightIQ doesn't have pip installed, there are some pretty simple directions
+at:
+
+https://pip.pypa.io/en/stable/installing/
+
+
 With Internet connection
 ------------------------
 
 To install or upgrade the IIQTools package to your instance of InsightIQ run::
 
-  $ sudo su
-  $ easy_install --upgrade iiqtools
+  $ sudo pip install --upgrade iiqtools
+
 
 Without Internet connection
 ---------------------------
@@ -27,8 +37,7 @@ Without Internet connection
 #. Copy the package to the InsightIQ instance
 #. Run these commands, replacing ``<package>`` with the actual package name::
 
-   $ sudo su
-   $ easy_install --upgrade <package>
+   $ sudo pip install --upgrade <package>
 
 
 Setting up a development environment

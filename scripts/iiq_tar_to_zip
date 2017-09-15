@@ -12,7 +12,7 @@ sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages')
 sys.path.insert(1, '/usr/share/isilon/lib/python2.7/site-packages')
 sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages/argparse-1.2.1-py2.6.egg')
 
-from iiqtools.iiq_gather_info import main
+from iiqtools.iiq_tar_to_zip import main
 
 
 if __name__ == '__main__':

@@ -92,6 +92,7 @@ man
 pip-selfcheck.json
 lib
 lib64
+local/
 
 # Spyder project settings
 .spyderproject
