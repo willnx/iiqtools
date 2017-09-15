@@ -58,3 +58,67 @@ Outputting the tar file to a different directory::
   2017-09-11 14:55:44,451 - INFO - Collecting log files
   2017-09-11 14:55:45,957 - INFO - Log gather complete
   2017-09-11 14:55:45,957 - INFO - Created log file /datastore/IIQLogs-sr1234-1505166944.tgz
+
+
+iiq_tar_to_zip
+==============
+
+Starting with InsightIQ 3.2, you could export a cluster's database from one instance,
+then import it later or on another InsightIQ instance. Initially, the exported
+data was in `tar file <scripts/iiq_tar_to_zip>`_ format, but in InsightIQ 4.1
+we switched to using a `zip file <scripts/iiq_tar_to_zip>`_. The switch was to
+resolve a bug where importing large exports would time out. The data contained
+within the tar and the zip files is identical; only the compression format has changed.
+This means that if we convert an old tar export to zip, we can use that archive
+in newer versions of InsightIQ.
+
+Use cases for this script:
+
+Migration Upgrades
+  Instead of upgrading an existing deployment, you export the data on your old
+  instance, use this script to convert the format, and then import that data
+  on a new deployment of InsightIQ. This approach is ideal for `OVA <scripts/iiq_tar_to_zip>`_
+  deployments of InsightIQ because the newer OVAs for InsightIQ have the latest
+  security patches applied, and the root partition is configured with `LVM <scripts/iiq_tar_to_zip>`_.
+
+Maintain Legacy Exports
+  With the upgrade to 4.1, any datastore exports created on the older version
+  of InsightIQ are no longer compatible. This script will update the format
+  of those older datastore exports so you can continue to use them in newer
+  versions of InsightIQ.
+
+
+Usage Examples
+--------------
+
+Obtaining the *help* message::
+
+  [administrator@localhost ~]$ iiq_tar_to_zip --help
+  usage: iiq_tar_to_zip [-h] -s SOURCE_TAR [-o OUTPUT_DIR]
+  Convert .tar to .zip for IIQ datastore export files
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -s SOURCE_TAR, --source-tar SOURCE_TAR
+                          The source .tar file to convert to .zip (default:
+                          None)
+    -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+                          The (default: /home/administrator)
+
+Simple usage (this export was only about 20MB in size)::
+
+  [administrator@localhost ~]$ iiq_tar_to_zip --source-tar /datastore/insightiq_export_1505412864.tar.gz
+  2017-09-15 16:57:02,669 - INFO - Converting /datastore/insightiq_export_1505412864.tar.gz to zip format
+  2017-09-15 16:57:02,849 - INFO - InsightIQ datastore tar export contained  2 files
+  2017-09-15 16:57:02,850 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff.dump
+  2017-09-15 16:57:03,120 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff_config.json
+  2017-09-15 16:57:03,160 - INFO - New zip formatted file saved to /home/administrator/insightiq_export_1505412864.zip
+
+Creating the new zip in a different directory::
+
+  [administrator@localhost ~]$ iiq_tar_to_zip --source-tar /datastore/insightiq_export_1505412864.tar.gz --output-dir /tmp
+  2017-09-15 17:00:08,897 - INFO - Converting /datastore/insightiq_export_1505412864.tar.gz to zip format
+  2017-09-15 17:00:09,073 - INFO - InsightIQ datastore tar export contained  2 files
+  2017-09-15 17:00:09,073 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff.dump
+  2017-09-15 17:00:09,337 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff_config.json
+  2017-09-15 17:00:09,374 - INFO - New zip formatted file saved to /tmp/insightiq_export_1505412864.zip
