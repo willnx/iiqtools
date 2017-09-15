@@ -183,7 +183,7 @@ def main(the_cli_args):
 
     tar_export = tarfile.open(args.source_tar)
     tar_files = tar_export.getmembers()
-    log.info('InsightIQ datastore tar export contained % files', len(tar_files))
+    log.info('InsightIQ datastore tar export contained %s files', len(tar_files))
     for the_file in tar_files:
         file_handle = tar_export.extractfile(the_file)
         log.info('Converting %s', the_file.name)
