@@ -115,19 +115,6 @@ def ifconfig_to_dict(ifconfig_output):
     return base
 
 
-def iiq_version_to_dict(cli_output):
-    """Parse the output from the command `rpm -q isilon-insightiq` into a dictionary
-
-    :Returns: Dictionary
-
-    :param cli_output: **Required** The pile of stuff outputted by running `rpm -q isilon-insightiq`
-    :type cli_output: String
-    """
-    lines = cli_output.split('\n')
-    version = lines[0].split('-')[2]
-    return { 'version' : version }
-
-
 def memory_to_dict(output):
     """Parse the output from the command `free -m` into a dictionary
 

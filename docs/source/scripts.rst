@@ -65,8 +65,8 @@ iiq_tar_to_zip
 
 Starting with InsightIQ 3.2, you could export a cluster's database from one instance,
 then import it later or on another InsightIQ instance. Initially, the exported
-data was in `tar file <scripts/iiq_tar_to_zip>`_ format, but in InsightIQ 4.1
-we switched to using a `zip file <scripts/iiq_tar_to_zip>`_. The switch was to
+data was in `tar file <https://en.wikipedia.org/wiki/Tar_(computing)>`_ format, but in InsightIQ 4.1
+we switched to using a `zip file https://en.wikipedia.org/wiki/Zip_(file_format)>`_. The switch was to
 resolve a bug where importing large exports would time out. The data contained
 within the tar and the zip files is identical; only the compression format has changed.
 This means that if we convert an old tar export to zip, we can use that archive
@@ -77,9 +77,9 @@ Use cases for this script:
 Migration Upgrades
   Instead of upgrading an existing deployment, you export the data on your old
   instance, use this script to convert the format, and then import that data
-  on a new deployment of InsightIQ. This approach is ideal for `OVA <scripts/iiq_tar_to_zip>`_
+  on a new deployment of InsightIQ. This approach is ideal for `OVA <https://en.wikipedia.org/wiki/Virtual_appliance>`_
   deployments of InsightIQ because the newer OVAs for InsightIQ have the latest
-  security patches applied, and the root partition is configured with `LVM <scripts/iiq_tar_to_zip>`_.
+  security patches applied, and the root partition is configured with `LVM <https://en.wikipedia.org/wiki/Logical_Volume_Manager_(Linux)>`_.
 
 Maintain Legacy Exports
   With the upgrade to 4.1, any datastore exports created on the older version
@@ -122,3 +122,16 @@ Creating the new zip in a different directory::
   2017-09-15 17:00:09,073 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff.dump
   2017-09-15 17:00:09,337 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff_config.json
   2017-09-15 17:00:09,374 - INFO - New zip formatted file saved to /tmp/insightiq_export_1505412864.zip
+
+
+iiq_version
+===========
+
+A rather straght forward script that prints the version of InsightIQ
+and IIQTools that's installed.
+
+Example Usage::
+
+  [administrator@localhost ~]$ iiq_version
+  InsightIQ: 4.1.1.3
+  IIQTools: 0.1.0
