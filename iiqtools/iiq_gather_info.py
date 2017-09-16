@@ -221,7 +221,6 @@ def iiq_version_info():
     """
     iiq_version = versions.get_iiq_version()
     iiqtools_version = versions.get_iiqtools_version()
-    {'insightiq' : iiq_version.version, 'iiqtools' : iiqtools_version.version}
     data = {'insightiq' : iiq_version.version,  'iiqtools' : iiqtools_version.version}
     return json.dumps(data, indent=4, sort_keys=True)
 
