@@ -66,21 +66,5 @@ class TestMemoryToDict(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-class TestIiqVersionToDict(unittest.TestCase):
-    """A suite of test cases for the iiqtools.utils.cli_parsers.iiq_version_to_dict function"""
-
-    def test_iiq_version_to_dict_1(self):
-        """Example 1 of cli to get InsightIQ version output parses to expected structure"""
-        with open(os.path.join(EXAMPLES_DIR, 'iiq_version1.json')) as the_file:
-            data = json.load(the_file)
-        example_output = data['stdout']
-        parsed = cli_parsers.iiq_version_to_dict(example_output)
-
-        result = cmp(parsed['version'], data['version'])
-        expected = 0 # cmp return zero when values are identical
-        self.assertEqual(result, expected)
-
-
-
 if __name__ == '__main__':
     unittest.main()

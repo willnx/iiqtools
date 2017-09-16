@@ -26,6 +26,7 @@ except ImportError:
     iiq_api = MagicMock()
     APIConnectionError = RuntimeError
 
+from iiqtools.utils import versions
 from iiqtools.utils import cli_parsers
 from iiqtools.utils.logger import get_logger
 from iiqtools.utils.generic import check_path
@@ -218,7 +219,11 @@ def iiq_version_info():
 
     :Returns: JSON String
     """
-    return cli_cmd_info('rpm -q isilon-insightiq', cli_parsers.iiq_version_to_dict)
+    iiq_version = versions.get_iiq_version()
+    iiqtools_version = versions.get_iiqtools_version()
+    {'insightiq' : iiq_version.version, 'iiqtools' : iiqtools_version.version}
+    data = {'insightiq' : iiq_version.version,  'iiqtools' : iiqtools_version.version}
+    return json.dumps(data, indent=4, sort_keys=True)
 
 
 def main(the_cli_args):
