@@ -175,7 +175,6 @@ class TestInit(unittest.TestCase):
 
         self.assertTrue(isinstance(my_dict, dict))
 
-
     def test_get_other_typeerror(self):
         """Version._get_other supports only strings or Version as param"""
         v = versions.Version(name='foo', version='1.2.3')
@@ -184,7 +183,8 @@ class TestInit(unittest.TestCase):
     def test_get_other_typeerror_2(self):
         """Version._get_other - Invalid version strings raises a TypeError"""
         v = versions.Version(name='foo', version='1.2.3')
-        self.assertRaises(TypeError, v._get_other, 'a.3.6')
+        self.assertRaises(TypeError, v._get_other, '1')
+
 
 class TestEquals(unittest.TestCase):
     """A suite of tests that compare equality, ``==``"""
