@@ -122,3 +122,16 @@ Creating the new zip in a different directory::
   2017-09-15 17:00:09,073 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff.dump
   2017-09-15 17:00:09,337 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff_config.json
   2017-09-15 17:00:09,374 - INFO - New zip formatted file saved to /tmp/insightiq_export_1505412864.zip
+
+
+iiq_version
+===========
+
+A rather straght forward script that prints the version of InsightIQ
+and IIQTools that's installed.
+
+Example Usage::
+
+  [administrator@localhost ~]$ iiq_version
+  InsightIQ: 4.1.1.3
+  IIQTools: 0.1.0
