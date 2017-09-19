@@ -2,6 +2,7 @@
 """
 This module make obtaining and comparing version strings easy!
 """
+import glob
 from pkg_resources import get_distribution, DistributionNotFound
 
 
@@ -259,7 +260,7 @@ def get_iiq_version():
     :Returns: iiqtools.utils.versions.Version
     """
     try:
-        iiqtools_version = get_distribution('insightiq').version
+        iiqtools_version = get_distribution('isilon_insightiq').version
     except DistributionNotFound:
         return None
     else:
