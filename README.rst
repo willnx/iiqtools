@@ -10,6 +10,15 @@ IIQTools
 
 This package contains scripts to help debug and support InsightIQ.
 
+InsightIQ is a web-app developed by Dell EMC for your Isilon OneFS cluster.
+It runs "off-cluster" and collects statistics about the file system and other various
+performance metrics. Users of InsightIQ rely on that data to:
+
+- Optimize storage resources
+- Forecast future needs
+- Identify performance bottlenecks
+- Export Isilon specific data to "in house" analytic tools
+
 
 ********************
 Installing/Upgrading
