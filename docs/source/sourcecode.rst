@@ -48,6 +48,12 @@ shell
 .. automodule:: iiqtools.utils.shell
    :members:
 
+versions
+--------
+
+.. automodule:: iiqtools.utils.versions
+   :members:
+
 iiqtools.iiq_gather_info
 ************************
 

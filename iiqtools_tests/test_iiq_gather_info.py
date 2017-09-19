@@ -13,6 +13,7 @@ import __builtin__
 from mock import patch, MagicMock
 
 from iiqtools import iiq_gather_info
+from iiqtools.utils.versions import Version
 
 
 class TestGetTarfile(unittest.TestCase):
@@ -264,25 +265,28 @@ class TestCliCmdInfoHelpers(unittest.TestCase):
 
         self.assertEqual(sent_command, expected_command)
 
-    @patch.object(iiq_gather_info, 'cli_cmd_info')
-    def test_iiq_version_info(self, fake_cli_cmd_info):
+    @patch.object(iiq_gather_info, 'versions')
+    def test_iiq_version_info(self, fake_versions):
         """iiq_gather_info.iiq_version_info calls the expected command"""
-        iiq_gather_info.iiq_version_info()
-        args, _ = fake_cli_cmd_info.call_args
-        sent_command = args[0]
-        expected_command = 'rpm -q isilon-insightiq'
+        fake_versions.get_iiq_version.return_value = Version(version='1.2.3', name='InsightIQ')
+        fake_versions.get_iiqtools_version.return_value = Version(version='1.2.3', name='InsightIQ')
+        data = iiq_gather_info.iiq_version_info()
+        expected = {'insightiq' : '1.2.3', 'iiqtools' : '1.2.3'}
 
-        self.assertEqual(sent_command, expected_command)
+        self.assertEqual(json.loads(data), expected)
 
 class TestIiqGatheInfoMain(unittest.TestCase):
     """A suite of tests for the iiq_gather_info.main function"""
 
+    @patch.object(iiq_gather_info, 'versions')
     @patch.object(iiq_gather_info.sys, 'stdout')
     @patch.object(__builtin__, 'raw_input')
     @patch.object(iiq_gather_info, 'get_tarfile')
     @patch.object(iiq_gather_info, 'get_logger')
-    def test_main(self, fake_get_logger, fake_get_tarfile, fake_raw_input, fake_stdout):
+    def test_main(self, fake_get_logger, fake_get_tarfile, fake_raw_input, fake_stdout, fake_versions):
         """iiq_gather_info.main is callable, and returns an integer"""
+        fake_versions.get_iiq_version.return_value = Version(version='1.2.3', name='InsightIQ')
+        fake_versions.get_iiqtools_version.return_value = Version(version='1.2.3', name='InsightIQ')
         fake_raw_input.return_value = 'yes'
         exit_code = iiq_gather_info.main(['--case-number', '0', '--output-dir', '/tmp'])
         expected = 0

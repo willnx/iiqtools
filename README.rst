@@ -23,7 +23,7 @@ should be able to simply run this command on your InsightIQ instance::
 
 For full documentation, checkout:
 
-http://iiqtools.readthedocs.io/en/docs/getting_started.html#install-and-upgrade
+http://iiqtools.readthedocs.io/en/latest/getting_started.html#install-and-upgrade
 
 *************
 Documentation
