@@ -25,5 +25,5 @@ def main(the_cli_args):
 
     iiqtools_version = versions.get_iiqtools_version()
     insightiq_version = versions.get_iiq_version()
-    print('InsightIQ: %s' % insightiq_version)
-    print('IIQTools: %s' % iiqtools_version)
+    print('InsightIQ: %s' % getattr(insightiq_version, 'version', 'None'))
+    print('IIQTools: %s' % getattr(iiqtools_version, 'version', 'None'))
