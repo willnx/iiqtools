@@ -27,7 +27,7 @@ class TestDataStructures(unittest.TestCase):
         """The PatchContents API accepts the expected params"""
         patch_contents = iiq_patch.PatchContents(readme='some readme data',
                                                  meta_ini='the contents of meta.ini',
-                                                 patched_files={'/patched/file', '/original/file/location'})
+                                                 patched_files={'/patched/file' : '/original/file/location'})
 
         self.assertTrue(isinstance(patch_contents, iiq_patch._PatchContents))
 
