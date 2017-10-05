@@ -15,6 +15,7 @@ Contents:
    scripts
    contributing
    sourcecode
+   patching
 
 Indices and tables
 ==================

@@ -135,3 +135,54 @@ Example Usage::
   [administrator@localhost ~]$ iiq_version
   InsightIQ: 4.1.1.3
   IIQTools: 0.1.0
+
+
+iiq_patch
+=========
+
+A tool for installing, uninstalling, and displaying patches to IsightIQ source code.
+
+.. note::
+
+   Installing **and** uninstalling requires the InsightIQ application to be restarted.
+   Running the ``iiq_patch`` tool with ``sudo`` will automatically restart the application.
+
+Display all installed patches::
+
+  [administrator@localhost ~]$ iiq_patch --show
+
+          Patches
+          -------
+          patch1234
+
+          Count: 1
+
+Display details for a specific patch::
+
+  [administrator@localhost ~]$ iiq_patch --show
+
+  Here's an example patch details
+
+
+Uninstalling a patch as a non-root user::
+
+  [administrator@localhost ~]$ iiq_patch --uninstall patch1234
+  2017-10-03 12:49:19,656 - INFO - Successfully uninstalled patch
+  2017-10-03 12:49:19,657 - INFO - Non-root user detected for patch install. Unable to restart InsightIQ.
+  2017-10-03 12:49:19,657 - INFO - **Patch wont take effect unless you restart InsightIQ**
+
+  2017-10-03 12:49:19,657 - INFO - Please run the following command to restart InsightIQ:
+  2017-10-03 12:49:19,657 - INFO - sudo service insightiq restart
+
+
+Installing a patch with ``sudo``::
+
+  [administrator@localhost ~]$ sudo iiq_patch --install insightiq-patch-1234.tgz
+  [sudo] password for administrator:
+  2017-10-03 12:54:26,643 - INFO - Installed IIQ version: 4.1.1.3
+  2017-10-03 12:54:26,644 - INFO - Patch min version: 4.1.0
+  2017-10-03 12:54:26,644 - INFO - Patch max version: 4.1.1.3
+  2017-10-03 12:54:26,645 - INFO - Successfully installed patch
+  2017-10-03 12:54:26,645 - INFO - Restarting InsightIQ
+  2017-10-03 12:54:34,098 - INFO - Stopping insightiq:       [  OK  ]
+  Starting insightiq:                                        [  OK  ]
