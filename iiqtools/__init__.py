@@ -25,6 +25,7 @@ IIQ_PATHS = ['/usr/share/isilon/lib/python2.6/site-packages/argparse-1.2.1-py2.6
              '/usr/share/isilon/lib/python2.6/site-packages/psycopg2-2.5.4-py2.6-linux-x86_64.egg',
              '/usr/share/isilon/lib/python2.6/site-packages/python_cjson-1.0.5-py2.6-linux-x86_64.egg',
              '/usr/share/isilon/lib/python2.6/site-packages/pytz-2015.2-py2.6.egg',
+             '/usr/share/isilon/lib/python2.6/site-packages/configobj-4.7.2-py2.6.egg',
 ]
 
 sys.path.insert(1, '/usr/share/isilon/lib/python2.6/site-packages')
