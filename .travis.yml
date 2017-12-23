@@ -3,8 +3,7 @@ python:
   - "2.6"
   - "2.7"
 
-before_install:
-  - sudo apt-get install -y postgresql-9.3 postgresql-server-dev-9.3
+group: deprecated-2017Q4
 
 install:
   - pip install -r requirements-dev.txt
