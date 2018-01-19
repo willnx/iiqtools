@@ -25,33 +25,9 @@ from iiqtools.utils.logger import get_logger
 # Data structures and related functions #
 #########################################
 
-_PatchInfo = namedtuple("PatchInfo", "iiq_dir patches_dir specific_patch is_installed readme all_patches")
-# So we can have a nice docstring for the namedtuple
-class PatchInfo(_PatchInfo):
-    """Describes the state of patches for InsightIQ
-
-    :param iiq_dir: The file system path where InsightIQ source is located.
-    :type iiq_dir: String
-
-    :param patches_dir: The file system path where patches for InsightIQ are stored.
-    :type patches_dir: String
-
-    :param specific_patch: Only populated when a patch is being installed/removed/read.
-    :type specific_patch: String
-
-    :param is_installed: If ``specific_patch`` is installed or not.
-    :Type is_installed: Boolean
-
-    :param readme: The README.txt for ``specific_patch`` if applicable.
-    :type readme: String
-
-    :param all_patches: All currently installed patches.
-    :type all_patches: Tuple
-    """
-    pass
-
 
 _PatchContents = namedtuple("PatchContents", "readme meta_ini patched_files")
+# So we can have a nice docstring for the namedtuple
 class PatchContents(_PatchContents):
     """The extracted data from a patch file
 
@@ -65,43 +41,6 @@ class PatchContents(_PatchContents):
     :type patched_files: Dictionary
     """
     pass
-
-
-def get_patch_info(specific_patch, log):
-    """Obtain the current state of patches for InsightIQ
-
-    :Returns: PatchInfo (namedtuple)
-
-    :param specific_patch: **Required** The name of a patch that's being installed/removed/read.
-    :type specific_patch: String
-
-    :param log: **Required** The logging object. This param is really here to make unit testing
-                easier -> https://en.wikipedia.org/wiki/Dependency_injection
-    :type log: logging.Logger
-    """
-    try:
-        # IIQ 4.1.0 and newer runs on Python 2.7, older versions use  Python 2.6
-        iiq_dir = glob.glob('/usr/share/isilon/lib/python2.*/site-packages')[0]
-    except IndexError:
-        log.debug('Unable to find InsightIQ install dir. Is it installed?')
-        iiq_dir = ''
-    patches_dir = join_path(iiq_dir, 'insightiq/patches')
-    try:
-        all_patches = tuple(os.listdir(patches_dir))
-    except (OSError, IOError) as doh:
-        log.debug('Unable to list %s', patches_dir)
-        all_patches = []
-
-    is_installed = specific_patch in all_patches
-    try:
-        with open(join_path(patches_dir, specific_patch, 'README.txt')) as the_file:
-            readme = the_file.read()
-    except (OSError, IOError) as doh:
-        if specific_patch:
-            log.debug('%s : %s', doh.strerror, doh.filename)
-        readme = ''
-
-    return PatchInfo(iiq_dir, patches_dir, specific_patch, is_installed, readme, all_patches)
 
 
 def extract_patch_contents(patch_path, log):
@@ -529,7 +468,7 @@ def handle_show(specific_patch, log):
     :type log: logging.Logger
     """
     exit_code = 0
-    patch_info = get_patch_info(specific_patch, log)
+    patch_info = versions.get_patch_info(specific_patch, log)
     log.debug(patch_info)
     if not patch_info.all_patches:
         log.info('No patches installed')
@@ -571,7 +510,7 @@ def handle_install(patch_path, log):
     :param log: The logging object
     :type log: logging.Logger
     """
-    patch_info = get_patch_info(specific_patch='', log=log)
+    patch_info = versions.get_patch_info(specific_patch='', log=log)
     if not patch_info.iiq_dir:
         # IIQ is not installed, no way to install patch
         return 100
@@ -641,7 +580,7 @@ def handle_uninstall(patch_name, log):
     :param log: **Required** The logging object.
     :type log: logging.Logger
     """
-    patch_info = get_patch_info(specific_patch=patch_name, log=log)
+    patch_info = versions.get_patch_info(specific_patch=patch_name, log=log)
     patch_dir = join_path(patch_info.patches_dir, patch_name)
     if not patch_info.is_installed:
         log.info('Patch %s is not installed', patch_name)

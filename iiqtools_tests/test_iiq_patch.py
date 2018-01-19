@@ -8,20 +8,11 @@ from collections import namedtuple
 from mock import patch, MagicMock, mock_open
 
 from iiqtools import iiq_patch
+from iiqtools.utils import versions
 
 
 class TestDataStructures(unittest.TestCase):
     """A set of test cases for the data structures used by iiq_patch"""
-
-    def test_patch_info(self):
-        """The PatchInfo API accepts the expected params"""
-        patch_info = iiq_patch.PatchInfo(iiq_dir='/some/path',
-                                         patches_dir='/another/path',
-                                         is_installed=False,
-                                         specific_patch='this_patch',
-                                         readme='data from readme',
-                                         all_patches=('patch1', 'patch2'))
-        self.assertTrue(isinstance(patch_info, iiq_patch._PatchInfo))
 
     def test_patch_contents(self):
         """The PatchContents API accepts the expected params"""
@@ -30,16 +21,6 @@ class TestDataStructures(unittest.TestCase):
                                                  patched_files={'/patched/file' : '/original/file/location'})
 
         self.assertTrue(isinstance(patch_contents, iiq_patch._PatchContents))
-
-    def test_get_patch_info_returns(self):
-        """iiq_patch.get_patch_info always returns a PatchInfo object"""
-        # This test assumes IIQ isn't installed, thus the pile of errors that'll
-        # occur shouldn't prevent us from getting a PatchInfo object
-        fake_log = MagicMock()
-        patch_info = iiq_patch.get_patch_info('bogus-patch.tgz', fake_log)
-
-        self.assertTrue(isinstance(patch_info, iiq_patch._PatchInfo))
-        self.assertEqual(patch_info.iiq_dir, '')
 
     @patch.object(iiq_patch, 'tarfile')
     def test_extract_patch_contents_returns(self, fake_tarfile):
@@ -406,7 +387,7 @@ class TestCommandHandlers(unittest.TestCase):
         patch_contents = iiq_patch.PatchContents(readme='readme.txt contents',
                                                  meta_ini='foo',
                                                  patched_files={'/some/patched/files.py' : 'data in patched file'})
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=False,
                                          readme='the readme contents',
@@ -419,11 +400,11 @@ class TestCommandHandlers(unittest.TestCase):
         self.assertEqual(result, expected)
 
     @patch.object(__builtin__, 'print')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_show_ok(self, fake_get_patch_info, fake_print):
         """iiq_patch.handle_show returns 0 (zero) upon success"""
         fake_logger = MagicMock()
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=False,
                                          readme='the readme contents',
@@ -436,11 +417,11 @@ class TestCommandHandlers(unittest.TestCase):
         self.assertEqual(exit_code, expected)
 
     @patch.object(__builtin__, 'print')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_show_details(self, fake_get_patch_info, fake_print):
         """iiq_patch.handle_show returns 0 (zero) upon success"""
         fake_logger = MagicMock()
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -453,11 +434,11 @@ class TestCommandHandlers(unittest.TestCase):
         self.assertEqual(exit_code, expected)
 
     @patch.object(__builtin__, 'print')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_show_not_installed(self, fake_get_patch_info, fake_print):
         """iiq_patch.handle_show returns 51 if the specific patch is not installed"""
         fake_logger = MagicMock()
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=False,
                                          readme='the readme contents',
@@ -470,11 +451,11 @@ class TestCommandHandlers(unittest.TestCase):
         self.assertEqual(exit_code, expected)
 
     @patch.object(__builtin__, 'print')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_show_no_readme(self, fake_get_patch_info, fake_print):
         """iiq_patch.handle_show returns 51 if the specific patch is not installed"""
         fake_logger = MagicMock()
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='',
@@ -488,7 +469,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -497,7 +478,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns zero if patch is successfully installed"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -517,7 +498,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -526,7 +507,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 100 if InsightIQ is not installed"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='',
+        patch_info = versions.PatchInfo(iiq_dir='',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -546,7 +527,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -555,7 +536,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 13 if it lacks permissions on the file system"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -576,7 +557,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -585,7 +566,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 0 even if the patches dir already exits"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -606,7 +587,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -616,7 +597,7 @@ class TestCommandHandlers(unittest.TestCase):
         fake_logger = MagicMock()
         fake_logger.level = 10
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -637,7 +618,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -646,7 +627,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 101 if patch file is malformed"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -666,7 +647,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -675,7 +656,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 0 if patch already installed"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -695,7 +676,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -704,7 +685,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 102 if patch doesn't apply to installed version of InsightIQ"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='3.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -724,7 +705,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -733,7 +714,7 @@ class TestCommandHandlers(unittest.TestCase):
         """iiq_patch.handle_install returns 103 if source fails patchable test"""
         fake_logger = MagicMock()
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -754,7 +735,7 @@ class TestCommandHandlers(unittest.TestCase):
 
     @patch.object(iiq_patch.versions, 'get_iiq_version')
     @patch.object(iiq_patch, 'source_is_patchable')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     @patch.object(iiq_patch, 'install_patch')
     @patch.object(iiq_patch, 'extract_patch_contents')
     @patch.object(iiq_patch.os, 'mkdir')
@@ -764,7 +745,7 @@ class TestCommandHandlers(unittest.TestCase):
         fake_logger = MagicMock()
         fake_logger.level = 10
         fake_iiq_version = iiq_patch.versions.Version(name='insightiq', version='4.1.0.3')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -787,14 +768,14 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return zero when patch uninstall is successful"""
         fake_logger = MagicMock()
         fake_meta_config = MagicMock()
         fake_meta_config.__getitem__.return_value = {'insightiq/patched_file.py' : 'theMD5hash'}
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -814,14 +795,14 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall_not_installed(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return 200 when patch isn't even installed"""
         fake_logger = MagicMock()
         fake_meta_config = MagicMock()
         fake_meta_config.__getitem__.return_value = {'insightiq/patched_file.py' : 'theMD5hash'}
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=False,
                                          readme='the readme contents',
@@ -842,13 +823,13 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall_ioerror(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return 201 when patch uninstall encounters an IOError"""
         fake_logger = MagicMock()
         fake_ConfigObj.side_effect = IOError(9, 'some error', 'some file')
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -867,14 +848,14 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall_bad_backups(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return 202 when backup source files test fails"""
         fake_logger = MagicMock()
         fake_meta_config = MagicMock()
         fake_meta_config.__getitem__.return_value = {'insightiq/patched_file.py' : 'theMD5hash'}
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -895,14 +876,14 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall_bad_md5(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return 203 when patch backup files have bad md5 values"""
         fake_logger = MagicMock()
         fake_meta_config = MagicMock()
         fake_meta_config.__getitem__.return_value = {'insightiq/patched_file.py' : 'theMD5hash'}
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -923,14 +904,14 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall_ioerror_restore(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return the errno of the IOError if one is encountered while restoring originals"""
         fake_logger = MagicMock()
         fake_meta_config = MagicMock()
         fake_meta_config.__getitem__.return_value = {'insightiq/patched_file.py' : 'theMD5hash'}
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -952,14 +933,14 @@ class TestCommandHandlers(unittest.TestCase):
     @patch.object(iiq_patch, 'expected_backups')
     @patch.object(iiq_patch.os, 'listdir')
     @patch.object(iiq_patch, 'ConfigObj')
-    @patch.object(iiq_patch, 'get_patch_info')
+    @patch.object(versions, 'get_patch_info')
     def test_handle_uninstall_rm_failure(self, fake_get_patch_info, fake_ConfigObj, fake_listdir,
         fake_expected_backups, fake_rmtree, fake_md5_matches, fake_restore_originals):
         """iiq_patch.handle_uninstall return the errno encounted if it fails to remove the patch reference"""
         fake_logger = MagicMock()
         fake_meta_config = MagicMock()
         fake_meta_config.__getitem__.return_value = {'insightiq/patched_file.py' : 'theMD5hash'}
-        patch_info = iiq_patch.PatchInfo(iiq_dir='some/dir',
+        patch_info = versions.PatchInfo(iiq_dir='some/dir',
                                          patches_dir='some/dir/patches',
                                          is_installed=True,
                                          readme='the readme contents',
@@ -1030,7 +1011,6 @@ class TestCommandHandlers(unittest.TestCase):
         expected = 0
 
         self.assertEqual(exit_code, expected)
-
 
 
 if __name__ == '__main__':
