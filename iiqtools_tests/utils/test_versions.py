@@ -3,7 +3,7 @@
 Unit tests for the Version object
 """
 import unittest
-from mock import patch
+from mock import patch, MagicMock
 
 from iiqtools.utils import versions
 
@@ -450,6 +450,43 @@ class TestGetVersions(unittest.TestCase):
         v = versions.get_iiqtools_version()
 
         self.assertTrue(isinstance(v, versions.Version))
+
+class TestPatchInfo(unittest.TestCase):
+    """TODO"""
+
+    def test_patch_info(self):
+        """The PatchInfo API accepts the expected params"""
+        patch_info = versions.PatchInfo(iiq_dir='/some/path',
+                                         patches_dir='/another/path',
+                                         is_installed=False,
+                                         specific_patch='this_patch',
+                                         readme='data from readme',
+                                         all_patches=('patch1', 'patch2'))
+        self.assertTrue(isinstance(patch_info, versions._PatchInfo))
+
+    def test_get_patch_info_returns(self):
+        """versions.get_patch_info always returns a PatchInfo object"""
+        # This test assumes IIQ isn't installed, thus the pile of errors that'll
+        # occur shouldn't prevent us from getting a PatchInfo object
+        fake_log = MagicMock()
+        patch_info = versions.get_patch_info('bogus-patch.tgz', fake_log)
+
+        self.assertTrue(isinstance(patch_info, versions._PatchInfo))
+        self.assertEqual(patch_info.iiq_dir, '')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

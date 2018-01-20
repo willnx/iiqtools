@@ -2,6 +2,9 @@
 """
 This module make obtaining and comparing version strings easy!
 """
+import glob
+import os
+from collections import namedtuple
 from pkg_resources import get_distribution, DistributionNotFound
 
 
@@ -277,3 +280,66 @@ def get_iiqtools_version():
         return None
     else:
         return Version(name='iiqtools', version=iiqtools_version)
+
+
+_PatchInfo = namedtuple("PatchInfo", "iiq_dir patches_dir specific_patch is_installed readme all_patches")
+# So we can have a nice docstring for the namedtuple
+class PatchInfo(_PatchInfo):
+    """Describes the state of patches for InsightIQ
+
+    :param iiq_dir: The file system path where InsightIQ source is located.
+    :type iiq_dir: String
+
+    :param patches_dir: The file system path where patches for InsightIQ are stored.
+    :type patches_dir: String
+
+    :param specific_patch: Only populated when a patch is being installed/removed/read.
+    :type specific_patch: String
+
+    :param is_installed: If ``specific_patch`` is installed or not.
+    :Type is_installed: Boolean
+
+    :param readme: The README.txt for ``specific_patch`` if applicable.
+    :type readme: String
+
+    :param all_patches: All currently installed patches.
+    :type all_patches: Tuple
+    """
+    pass
+
+
+def get_patch_info(specific_patch, log):
+    """Obtain the current state of patches for InsightIQ
+
+    :Returns: PatchInfo (namedtuple)
+
+    :param specific_patch: **Required** The name of a patch that's being installed/removed/read.
+    :type specific_patch: String
+
+    :param log: **Required** The logging object. This param is really here to make unit testing
+                easier -> https://en.wikipedia.org/wiki/Dependency_injection
+    :type log: logging.Logger
+    """
+    try:
+        # IIQ 4.1.0 and newer runs on Python 2.7, older versions use  Python 2.6
+        iiq_dir = glob.glob('/usr/share/isilon/lib/python2.*/site-packages')[0]
+    except IndexError:
+        log.debug('Unable to find InsightIQ install dir. Is it installed?')
+        iiq_dir = ''
+    patches_dir = iiq_dir + '/' + 'insightiq/patches'
+    try:
+        all_patches = tuple(os.listdir(patches_dir))
+    except (OSError, IOError) as doh:
+        log.debug('Unable to list %s', patches_dir)
+        all_patches = []
+
+    is_installed = specific_patch in all_patches
+    try:
+        with open(patches_dir + '/' + specific_patch + '/' + 'README.txt') as the_file:
+            readme = the_file.read()
+    except (OSError, IOError) as doh:
+        if specific_patch:
+            log.debug('%s : %s', doh.strerror, doh.filename)
+        readme = ''
+
+    return PatchInfo(iiq_dir, patches_dir, specific_patch, is_installed, readme, all_patches)
