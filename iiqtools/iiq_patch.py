@@ -331,9 +331,9 @@ def convert_patch_name(name, to='source'):
     :type to: Enum -> 'source', 'backup'
     """
     if to == 'source':
-        return name.replace('__', '/')
+        return name.replace('___', '/')
     elif to == 'backup':
-        return name.replace('/', '__')
+        return name.replace('/', '___')
     else:
         raise ValueError('param "to" must be either "source" or "backup", supplied: %s' % to)
 
