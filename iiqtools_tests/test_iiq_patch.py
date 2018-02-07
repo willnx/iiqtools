@@ -270,7 +270,7 @@ class TestValidators(unittest.TestCase):
     def test_expected_backups_ok(self):
         """iiq_patch.expected_backups returns True if the source file copies found meet the patches expectations"""
         fake_logger = MagicMock()
-        found_backups = ['path__to__some_file.py']
+        found_backups = ['path___to___some_file.py']
         expected_backups = ['path/to/some_file.py']
 
         result = iiq_patch.expected_backups(found_backups, expected_backups, fake_logger)
@@ -329,8 +329,24 @@ class TestUtils(unittest.TestCase):
 
     def test_convert_patch_name_to_source(self):
         """"iiq_patch.convert_patch_name correctly converts a backup file name to the source path"""
-        name = 'some__backup_copy.py'
+        name = 'some___backup_copy.py'
         expected = 'some/backup_copy.py'
+        result = iiq_patch.convert_patch_name(name, to='source')
+
+        self.assertEqual(expected, result)
+
+    def test_convert_duner_files_to_backup(self):
+        """iiq_patch.convert_patch_name handles double-under files, like __init__.py when converting to backup name"""
+        name = 'some/__init__.py'
+        expected = 'some_____init__.py'
+        result = iiq_patch.convert_patch_name(name, to='backup')
+
+        self.assertEqual(expected, result)
+
+    def test_convert_duner_files_to_source(self):
+        """iiq_patch.convert_patch_name handles double-under files, like __init__.py when converting to source name"""
+        name = 'some_____init__.py'
+        expected = 'some/__init__.py'
         result = iiq_patch.convert_patch_name(name, to='source')
 
         self.assertEqual(expected, result)
@@ -338,7 +354,7 @@ class TestUtils(unittest.TestCase):
     def test_convert_patch_name_to_backup(self):
         """"iiq_patch.convert_patch_name correctly converts source file path to a backup file name"""
         name = 'some/backup_copy.py'
-        expected = 'some__backup_copy.py'
+        expected = 'some___backup_copy.py'
         result = iiq_patch.convert_patch_name(name, to='backup')
 
         self.assertEqual(expected, result)

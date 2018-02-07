@@ -67,10 +67,10 @@ to enable us to uninstall the patch. Within that directory, you'll see some rath
 long file names::
 
   \originals
-    insightiq__controllers__security.py
+    insightiq___controllers___security.py
 
-The double-underbars ``__`` are used to replace the forward slash normally associated
-with a file system path. A double-underbar is used instead of a single-underbar
+The triple-underbars ``___`` are used to replace the forward slash normally associated
+with a file system path. A triple-underbar is used instead of a single-underbar
 because it's common for a Python source file to contain a single-underbar.
 
 What's in a patch
