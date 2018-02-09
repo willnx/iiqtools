@@ -26,5 +26,5 @@ test: install
 lint: install
 	pylint iiqtools
 
-rpm: clean
-	python setup.py bdist_rpm --requires isilon-insightiq --binary-only --python /usr/bin/python
+rpm2: clean
+	python setup.py bdist_rpm
