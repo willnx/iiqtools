@@ -26,5 +26,5 @@ test: install
 lint: install
 	pylint iiqtools
 
-rpm2: clean
+rpm: clean
 	python setup.py bdist_rpm
