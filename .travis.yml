@@ -3,6 +3,8 @@ python:
   - "2.6"
   - "2.7"
 
+sudo: required
+dist: trusty
 group: deprecated-2017Q4
 
 before_install:
