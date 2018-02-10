@@ -8,7 +8,7 @@ dist: trusty
 group: deprecated-2017Q4
 
 before_install:
-  - sudo apt-get purge -y libpq-dev
+  - sudo apt-get purge -y libpq-dev postgresql-9.2
   - sudo apt-get install -y postgresql-9.3 postgresql-server-dev-9.3
 
 install:
