@@ -554,6 +554,9 @@ def handle_install(patch_path, log):
                       patch_name=meta_config['info']['name'],
                       log=log)
     except (IOError, OSError) as doh:
+        specific_patch_dir = join_path(patch_info.patches_dir, meta_config['info']['name'])
+        # ignore_errors encase the patch specific dir was never made
+        shutil.rmtree(specific_patch_dir, ignore_errors=True)
         log.error(doh)
         log.info('Unable to install patch')
         if log.level == 10:

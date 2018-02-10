@@ -770,6 +770,7 @@ class TestCommandHandlers(unittest.TestCase):
         patch_contents = iiq_patch.PatchContents(readme='The readme contents',
                                                  meta_ini='[info]\nname=patch9001\nbug=1234\n[version]\nminimum=4.0\nmaximum=4.1.1\n[files]\nsome/file.py = themd5checksum',
                                                  patched_files={'some/file.py' : 'data'})
+        fake_get_patch_info.return_value = patch_info
         fake_get_iiq_version.return_value = fake_iiq_version
         fake_extract_patch_contents.return_value = patch_contents
         fake_install_patch.side_effect = IOError(9, 'testerror', 'somefile')
