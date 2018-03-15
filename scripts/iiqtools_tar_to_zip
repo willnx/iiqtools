@@ -4,7 +4,7 @@ Entry point for converting a cluster export from tar to zip format
 """
 import sys
 
-from iiqtools.iiq_tar_to_zip import main
+from iiqtools.iiqtools_tar_to_zip import main
 
 
 if __name__ == '__main__':

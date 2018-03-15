@@ -54,8 +54,8 @@ versions
 .. automodule:: iiqtools.utils.versions
    :members:
 
-iiqtools.iiq_gather_info
-************************
+iiqtools.iiqtools_gather_info
+*****************************
 
-.. automodule:: iiqtools.iiq_gather_info
+.. automodule:: iiqtools.iiqtools_gather_info
    :members:

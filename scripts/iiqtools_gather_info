@@ -5,7 +5,7 @@ for remote troubleshooting.
 """
 import sys
 
-from iiqtools.iiq_gather_info import main
+from iiqtools.iiqtools_gather_info import main
 
 
 if __name__ == '__main__':
