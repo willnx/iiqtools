@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/opt/rh/python27/root/usr/bin/python
 """
 Entry point for displaying the installed versions of InsightIQ and IIQTools
 """
 import sys
 
-from iiqtools.iiq_version import main
+from iiqtools.iiqtools_version import main
 
 
 if __name__ == '__main__':

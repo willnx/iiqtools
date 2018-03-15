@@ -1,0 +1,11 @@
+#!/usr/bin/python
+"""
+Entry point for creating archive backups of cluster data in InsightIQ
+"""
+import sys
+
+from iiqtools.iiqtools_cluster_backup import main
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

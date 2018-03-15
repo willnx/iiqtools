@@ -7,8 +7,8 @@ instance when you install the IIQTools package. Each section should have some
 examples of what running the script looks like, or what the tool does.
 
 
-iiq_gather_info
-===============
+iiqtools_gather_info
+====================
 
 The point of this script is to provide a convenient way for users to collect
 logs and configuration information about InsightIQ so that remote support can
@@ -19,8 +19,8 @@ Examples (assuming your running as the ``root`` users)
 
 Printing the *help* message::
 
-  [root@localhost ~]$ iiq_gather_info --help
-  usage: iiq_gather_info [-h] [--output-dir OUTPUT_DIR] --case-number
+  [root@localhost ~]$ iiqtools_gather_info --help
+  usage: iiqtools_gather_info [-h] [--output-dir OUTPUT_DIR] --case-number
                        CASE_NUMBER
 
   Generate a .tar file for debugging InsightIQ
@@ -36,7 +36,7 @@ Printing the *help* message::
 
 Generating a gather::
 
-  [root@localhost ~]$ iiq_gather_info --case-number 1234
+  [root@localhost ~]$ iiqtools_gather_info --case-number 1234
   2017-09-11 14:53:45,298 - INFO - Collecting config information
   2017-09-11 14:53:46,123 - INFO - Collecting log files
   2017-09-11 14:53:48,126 - INFO - Log gather complete
@@ -45,23 +45,23 @@ Generating a gather::
 
 Forgetting to provide the ``--case-number`` argument::
 
-  [root@localhost ~]$ iiq_gather_info
-  usage: iiq_gather_info [-h] [--output-dir OUTPUT_DIR] --case-number
+  [root@localhost ~]$ iiqtools_gather_info
+  usage: iiqtools_gather_info [-h] [--output-dir OUTPUT_DIR] --case-number
                          CASE_NUMBER
-  iiq_gather_info: error: argument --case-number is required
+  iiqtools_gather_info: error: argument --case-number is required
 
 
 Outputting the tar file to a different directory::
 
-  [root@localhost ~]$ iiq_gather_info --case-number 1234 --output-dir /datastore
+  [root@localhost ~]$ iiqtools_gather_info --case-number 1234 --output-dir /datastore
   2017-09-11 14:55:44,195 - INFO - Collecting config information
   2017-09-11 14:55:44,451 - INFO - Collecting log files
   2017-09-11 14:55:45,957 - INFO - Log gather complete
   2017-09-11 14:55:45,957 - INFO - Created log file /datastore/IIQLogs-sr1234-1505166944.tgz
 
 
-iiq_tar_to_zip
-==============
+iiqtools_tar_to_zip
+===================
 
 Starting with InsightIQ 3.2, you could export a cluster's database from one instance,
 then import it later or on another InsightIQ instance. Initially, the exported
@@ -93,8 +93,8 @@ Usage Examples
 
 Obtaining the *help* message::
 
-  [administrator@localhost ~]$ iiq_tar_to_zip --help
-  usage: iiq_tar_to_zip [-h] -s SOURCE_TAR [-o OUTPUT_DIR]
+  [administrator@localhost ~]$ iiqtools_tar_to_zip --help
+  usage: iiqtools_tar_to_zip [-h] -s SOURCE_TAR [-o OUTPUT_DIR]
   Convert .tar to .zip for IIQ datastore export files
 
   optional arguments:
@@ -107,7 +107,7 @@ Obtaining the *help* message::
 
 Simple usage (this export was only about 20MB in size)::
 
-  [administrator@localhost ~]$ iiq_tar_to_zip --source-tar /datastore/insightiq_export_1505412864.tar.gz
+  [administrator@localhost ~]$ iiqtools_tar_to_zip --source-tar /datastore/insightiq_export_1505412864.tar.gz
   2017-09-15 16:57:02,669 - INFO - Converting /datastore/insightiq_export_1505412864.tar.gz to zip format
   2017-09-15 16:57:02,849 - INFO - InsightIQ datastore tar export contained  2 files
   2017-09-15 16:57:02,850 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff.dump
@@ -116,7 +116,7 @@ Simple usage (this export was only about 20MB in size)::
 
 Creating the new zip in a different directory::
 
-  [administrator@localhost ~]$ iiq_tar_to_zip --source-tar /datastore/insightiq_export_1505412864.tar.gz --output-dir /tmp
+  [administrator@localhost ~]$ iiqtools_tar_to_zip --source-tar /datastore/insightiq_export_1505412864.tar.gz --output-dir /tmp
   2017-09-15 17:00:08,897 - INFO - Converting /datastore/insightiq_export_1505412864.tar.gz to zip format
   2017-09-15 17:00:09,073 - INFO - InsightIQ datastore tar export contained  2 files
   2017-09-15 17:00:09,073 - INFO - Converting insightiq_export_1505412864/dog-pools_003048c644105df4124ad80c701933e83eff.dump
@@ -124,32 +124,32 @@ Creating the new zip in a different directory::
   2017-09-15 17:00:09,374 - INFO - New zip formatted file saved to /tmp/insightiq_export_1505412864.zip
 
 
-iiq_version
-===========
+iiqtools_version
+================
 
 A rather straght forward script that prints the version of InsightIQ
 and IIQTools that's installed.
 
 Example Usage::
 
-  [administrator@localhost ~]$ iiq_version
+  [administrator@localhost ~]$ iiqtools_version
   InsightIQ: 4.1.1.3
   IIQTools: 0.1.0
 
 
-iiq_patch
-=========
+iiqtools_patch
+==============
 
 A tool for installing, uninstalling, and displaying patches to IsightIQ source code.
 
 .. note::
 
    Installing **and** uninstalling requires the InsightIQ application to be restarted.
-   Running the ``iiq_patch`` tool with ``sudo`` will automatically restart the application.
+   Running the ``iiqtools_patch`` tool with ``sudo`` will automatically restart the application.
 
 Display all installed patches::
 
-  [administrator@localhost ~]$ iiq_patch --show
+  [administrator@localhost ~]$ iiqtools_patch --show
 
           Patches
           -------
@@ -159,14 +159,14 @@ Display all installed patches::
 
 Display details for a specific patch::
 
-  [administrator@localhost ~]$ iiq_patch --show
+  [administrator@localhost ~]$ iiqtools_patch --show
 
   Here's an example patch details
 
 
 Uninstalling a patch as a non-root user::
 
-  [administrator@localhost ~]$ iiq_patch --uninstall patch1234
+  [administrator@localhost ~]$ iiqtools_patch --uninstall patch1234
   2017-10-03 12:49:19,656 - INFO - Successfully uninstalled patch
   2017-10-03 12:49:19,657 - INFO - Non-root user detected for patch install. Unable to restart InsightIQ.
   2017-10-03 12:49:19,657 - INFO - **Patch wont take effect unless you restart InsightIQ**
@@ -177,7 +177,7 @@ Uninstalling a patch as a non-root user::
 
 Installing a patch with ``sudo``::
 
-  [administrator@localhost ~]$ sudo iiq_patch --install insightiq-patch-1234.tgz
+  [administrator@localhost ~]$ sudo iiqtools_patch --install insightiq-patch-1234.tgz
   [sudo] password for administrator:
   2017-10-03 12:54:26,643 - INFO - Installed IIQ version: 4.1.1.3
   2017-10-03 12:54:26,644 - INFO - Patch min version: 4.1.0

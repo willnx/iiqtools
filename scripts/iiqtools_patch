@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/opt/rh/python27/root/usr/bin/python
 """
 Entry point for installing/uninstall patches for InsightIQ.
 """
 import sys
 
-from iiqtools.iiq_patch import main
+from iiqtools.iiqtools_patch import main
 
 
 if __name__ == '__main__':
