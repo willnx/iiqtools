@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/rh/python27/root/usr/bin/python
 """
 Entry point for installing/uninstall patches for InsightIQ.
 """

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/rh/python27/root/usr/bin/python
 """
 Entry point for converting a cluster export from tar to zip format
 """

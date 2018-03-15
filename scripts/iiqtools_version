@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/rh/python27/root/usr/bin/python
 """
 Entry point for displaying the installed versions of InsightIQ and IIQTools
 """

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/rh/python27/root/usr/bin/python
 """
 Entry point for collecting logs and config information about InsightIQ
 for remote troubleshooting.
