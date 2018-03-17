@@ -59,3 +59,21 @@ iiqtools.iiqtools_gather_info
 
 .. automodule:: iiqtools.iiqtools_gather_info
    :members:
+
+iiqtools.iiqtools_patch
+***********************
+
+.. automodule:: iiqtools.iiqtools_gather_info
+   :members:
+
+iiqtools.iiqtools_tar_to_zip
+****************************
+
+.. automodule:: iiqtools.iiqtools_tar_to_zip
+   :members:
+
+iiqtools.iiqtools_version
+*************************
+
+.. automodule:: iiqtools.iiqtools_version
+   :members:
