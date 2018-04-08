@@ -54,6 +54,12 @@ versions
 .. automodule:: iiqtools.utils.versions
    :members:
 
+insightiq_api
+-------------
+
+.. automodule:: iiqtools.utils.insightiq_api
+   :members:
+
 iiqtools.iiqtools_gather_info
 *****************************
 
