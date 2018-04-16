@@ -7,6 +7,10 @@ from threading import Lock
 
 import requests
 
+class ConnectionError(Exception):
+    """Unable to establish an connection to the OneFS API"""
+    pass
+
 
 class InsightiqApi(object):
     """An authenticated connection to the InsightIQ API
@@ -43,12 +47,36 @@ class InsightiqApi(object):
         self._password = password
         self.verify = verify
         self._url = 'https://localhost/' # 127.0.0.1 would break if IPv4 is disabled
-        self._session = self.renew_session()
+        self._session = None
+        self.renew_session()
 
     def renew_session(self):
-        """Refresh the authentication token being used for API calls"""
+        """Create a new session to the InsightIQ API
+
+        :Returns: requests.Session
+
+        :Raises: ConnectionError
+
+        The InsightIQ API can be a bit fickle, so this method automatically retries
+        establishing upwards of 3 times.
+        """
+        retries = 3
+        count = 0
+        for attempt in range(retries):
+            try:
+                iiq_session = self._get_session()
+            except requests.exceptions.ConnectionError:
+                continue
+            else:
+                self._session = iiq_session
+                break
+        else:
+            raise ConnectionError('Unable to connect to InsightIQ API')
+
+    def _get_session(self):
+        """Obtain an authentication token being used for API calls"""
         s = requests.Session()
-        resp = s.post(self._url + 'login', verify=False,
+        resp = s.post(self._url + 'login', verify=self.verify,
                       data={'username' : self._username,
                             'password' : self._password,
                             'authform' : '+Log+in+'})
@@ -57,10 +85,16 @@ class InsightiqApi(object):
 
     def end_session(self):
         """Logout of InsightIQ and close the connection to the server"""
-        self._session.get(self._url + '/logout')
-        self._session.close()
+        # use of with statement might result in no session created, but still call this method
+        if self._session:
+            try:
+                self.get(self._url + '/logout')
+            except requests.exceptions.ConnectionError:
+                pass
+            finally:
+                self._session.close()
 
-    def get(self, endpoint, parameters=None, body=None, headers=None):
+    def get(self, endpoint, params=None, data=None, headers=None, **kwargs):
         """Perform an HTTP GET request
 
         :Returns: PyObject
@@ -68,20 +102,20 @@ class InsightiqApi(object):
         :param endpoint: **Required** The URI end point of the InsightIQ API to call
         :type endpoint: String
 
-        :param parameters: The HTTP parameters to send in the HTTP request
-        :type parameters: Dictionary
+        :param params: The HTTP parameters to send in the HTTP request
+        :type params: Dictionary
 
-        :param body: The HTTP body content to send in the request. The Python
+        :param data: The HTTP body content to send in the request. The Python
                      object supplied (i.e. list, dict, etc) will be auto-converted
                      to JSON string.
-        :type body: PyObject
+        :type data: PyObject
 
         :param headers: Any additional HTTP headers to send in the request
         :type headers: Dictionary
         """
-        return self._call(endpoint, method='get', parameters=parameters, body=body, headers=headers)
+        return self._call(endpoint, method='get', params=params, data=data, headers=headers, **kwargs)
 
-    def post(self, endpoint, parameters=None, body=None, headers=None):
+    def post(self, endpoint, params=None, data=None, headers=None, **kwargs):
         """Perform an HTTP POST request
 
         :Returns: PyObject
@@ -89,20 +123,20 @@ class InsightiqApi(object):
         :param endpoint: **Required** The URI end point of the InsightIQ API to call
         :type endpoint: String
 
-        :param parameters: The HTTP parameters to send in the HTTP request
-        :type parameters: Dictionary
+        :param params: The HTTP parameters to send in the HTTP request
+        :type params: Dictionary
 
-        :param body: The HTTP body content to send in the request. The Python
+        :param data: The HTTP body content to send in the request. The Python
                      object supplied (i.e. list, dict, etc) will be auto-converted
                      to JSON string.
-        :type body: PyObject
+        :type data: PyObject
 
         :param headers: Any additional HTTP headers to send in the request
         :type headers: Dictionary
         """
-        return self._call(endpoint, method='post', parameters=parameters, body=body, headers=headers)
+        return self._call(endpoint, method='post', params=params, data=data, headers=headers, **kwargs)
 
-    def put(self, endpoint, parameters=None, body=None, headers=None):
+    def put(self, endpoint, params=None, data=None, headers=None, **kwargs):
         """Perform an HTTP PUT request
 
         :Returns: PyObject
@@ -110,20 +144,20 @@ class InsightiqApi(object):
         :param endpoint: **Required** The URI end point of the InsightIQ API to call
         :type endpoint: String
 
-        :param parameters: The HTTP parameters to send in the HTTP request
-        :type parameters: Dictionary
+        :param params: The HTTP parameters to send in the HTTP request
+        :type params: Dictionary
 
-        :param body: The HTTP body content to send in the request. The Python
+        :param data: The HTTP body content to send in the request. The Python
                      object supplied (i.e. list, dict, etc) will be auto-converted
                      to JSON string.
-        :type body: PyObject
+        :type data: PyObject
 
         :param headers: Any additional HTTP headers to send in the request
         :type headers: Dictionary
         """
-        return self._call(endpoint, method='put', parameters=parameters, body=body, headers=headers)
+        return self._call(endpoint, method='put', params=params, data=data, headers=headers, **kwargs)
 
-    def delete(self, endpoint, parameters=None, body=None, headers=None):
+    def delete(self, endpoint, params=None, data=None, headers=None, **kwargs):
         """Perform an HTTP DELETE request
 
         :Returns: PyObject
@@ -131,20 +165,20 @@ class InsightiqApi(object):
         :param endpoint: **Required** The URI end point of the InsightIQ API to call
         :type endpoint: String
 
-        :param parameters: The HTTP parameters to send in the HTTP request
-        :type parameters: Dictionary
+        :param params: The HTTP parameters to send in the HTTP request
+        :type params: Dictionary
 
-        :param body: The HTTP body content to send in the request. The Python
+        :param data: The HTTP body content to send in the request. The Python
                      object supplied (i.e. list, dict, etc) will be auto-converted
                      to JSON string.
-        :type body: PyObject
+        :type data: PyObject
 
         :param headers: Any additional HTTP headers to send in the request
         :type headers: Dictionary
         """
-        return self._call(endpoint, method='delete', parameters=parameters, body=body, headers=headers)
+        return self._call(endpoint, method='delete', params=params, data=data, headers=headers, **kwargs)
 
-    def head(self, endpoint, parameters=None, body=None, headers=None):
+    def head(self, endpoint, params=None, data=None, headers=None, **kwargs):
         """Perform an HTTP HEAD request
 
         :Returns: PyObject
@@ -152,18 +186,18 @@ class InsightiqApi(object):
         :param endpoint: **Required** The URI end point of the InsightIQ API to call
         :type endpoint: String
 
-        :param parameters: The HTTP parameters to send in the HTTP request
-        :type parameters: Dictionary
+        :param params: The HTTP parameters to send in the HTTP request
+        :type params: Dictionary
 
-        :param body: The HTTP body content to send in the request. The Python
+        :param data: The HTTP body content to send in the request. The Python
                      object supplied (i.e. list, dict, etc) will be auto-converted
                      to JSON string.
-        :type body: PyObject
+        :type data: PyObject
 
         :param headers: Any additional HTTP headers to send in the request
         :type headers: Dictionary
         """
-        return self._call(endpoint, method='head', parameters=parameters, body=body, headers=headers)
+        return self._call(endpoint, method='head', params=params, data=data, headers=headers, **kwargs)
 
     def _call(self, endpoint, method, **kwargs):
         """Actually makes the HTTP API calls

@@ -8,7 +8,6 @@ import json
 import getpass
 import argparse
 
-import requests
 try:
     from iiq_data_export.api_connection import iiq_api
     from insightiq.lib.api_connection.api import APIConnectionError
@@ -21,7 +20,7 @@ except ImportError:
     APIConnectionError = RuntimeError
 
 from iiqtools.utils.generic import printerr
-from iiqtools.utils.insightiq_api import InsightiqApi, Parameters
+from iiqtools.utils.insightiq_api import InsightiqApi, Parameters, ConnectionError
 
 
 def parse_args(cli_args):
@@ -53,9 +52,9 @@ def parse_args(cli_args):
     args = parser.parse_args(cli_args)
     if args.clusters:
         if not (args.location and args.username):
-            parser.error('-l/--location required when supplying -c/--clusters')
+            parser.error('-l/--location and --username required when supplying -c/--clusters')
         if not args.password:
-            args.password = getpass.getpass('Password for %s :' % args.username)
+            args.password = getpass.getpass('Please enter the password for %s :' % args.username)
     return args
 
 
@@ -159,8 +158,7 @@ def export_via_api(supplied_clusters, available_clusters, location, username, pa
     params = _make_export_params(supplied_clusters, available_clusters, location)
     with InsightiqApi(username=username, password=password) as iiq:
         response = iiq.get(endpoint, params=params)
-        result = response.json()
-    return result
+    return response.json()
 
 
 def main(cli_args):
@@ -201,9 +199,14 @@ def main(cli_args):
         error += 'via the InsightIQ UI. Additional error information might be\n'
         error += 'found in /var/log/insightiq.log'
         printerr(error)
+    except ConnectionError:
+        return_code = 4
+        error = '***Unable to communicate with the InsightIQ API***\n'
+        error += 'Please verify that the insightiq service is running and try again'
+        printerr(error)
     else:
         if not result['success']:
-            return_code = 4
+            return_code = 5
             printerr(result['msg'])
         else:
             return_code = 0

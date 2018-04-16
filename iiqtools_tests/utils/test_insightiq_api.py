@@ -6,6 +6,8 @@ import unittest
 import collections
 from mock import patch, MagicMock
 
+import requests
+
 from iiqtools.utils import insightiq_api
 
 
@@ -15,7 +17,7 @@ class TestInsightiqApi(unittest.TestCase):
     @classmethod
     def setUp(cls):
         """Runs before every test case"""
-        cls.patcher = patch.object(insightiq_api.InsightiqApi, 'renew_session')
+        cls.patcher = patch.object(insightiq_api.InsightiqApi, '_get_session')
         cls.fake_renew_session = cls.patcher.start()
         cls.fake_session = MagicMock()
         cls.fake_renew_session.return_value = cls.fake_session
@@ -131,6 +133,40 @@ class TestInsightiqApiRenewSession(unittest.TestCase):
         iiq = insightiq_api.InsightiqApi(username='pat', password='a')
 
         fake_post.raise_for_status.assert_called()
+
+
+class TestInsightiqSessions(unittest.TestCase):
+    """A suite of tests for the session creation logic in InsightiqApi"""
+
+    @patch.object(insightiq_api.InsightiqApi, '_get_session')
+    def test_session_retries(self, fake_get_session):
+        """InsightiqApi - ``renew_session()`` will try 3 times to get a valid session"""
+        fake_get_session.side_effect = [requests.exceptions.ConnectionError('testing'),
+                                        requests.exceptions.ConnectionError('testing'),
+                                        requests.exceptions.ConnectionError('testing'),
+                                        requests.exceptions.ConnectionError('testing'),]
+
+        try:
+            insightiq_api.InsightiqApi(username='bob', password='a')
+        except Exception as doh:
+            # this will raise connection error, but we're not testing that here
+            pass
+
+        call_count = fake_get_session.call_count
+        expected = 3
+
+        self.assertEqual(call_count, expected)
+
+    @patch.object(insightiq_api.InsightiqApi, '_get_session')
+    def test_connection_error(self, fake_get_session):
+        """InsightiqApi - failure to obtain a session raises ConnectionError"""
+        fake_get_session.side_effect = [requests.exceptions.ConnectionError('testing'),
+                                        requests.exceptions.ConnectionError('testing'),
+                                        requests.exceptions.ConnectionError('testing'),
+                                        requests.exceptions.ConnectionError('testing'),]
+
+        with self.assertRaises(insightiq_api.ConnectionError):
+                insightiq_api.InsightiqApi(username='bob', password='a')
 
 
 class TestParametersInit(unittest.TestCase):

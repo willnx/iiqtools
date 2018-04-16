@@ -10,7 +10,7 @@ import StringIO
 from mock import patch, MagicMock
 
 from iiqtools import iiqtools_cluster_backup
-from iiqtools.utils.insightiq_api import Parameters
+from iiqtools.utils.insightiq_api import Parameters, ConnectionError
 
 
 class TestClusterBackupCliArgs(unittest.TestCase):
@@ -257,6 +257,16 @@ class TestClusterBackupMain(unittest.TestCase):
 
         self.assertEqual(exit_code, expected)
 
+    def test_connection_error(self):
+        """If unable to establish a session with the IIQ API, we return exit code 4"""
+        self.fake_export.side_effect = [ConnectionError('testing')]
+        cli_args = ['--clusters', 'myCluster', '--location', '/some/dir', '--username', 'pat', '--password', 'a']
+
+        exit_code = iiqtools_cluster_backup.main(cli_args)
+        expected = 4
+
+        self.assertEqual(exit_code, expected)
+
     def test_html_response(self):
         """The IIQ API returns HTML if the API call utterly fails, and we return exit code 3"""
         self.fake_export.side_effect = [ValueError('testing')]
@@ -268,12 +278,12 @@ class TestClusterBackupMain(unittest.TestCase):
         self.assertEqual(exit_code, expected)
 
     def test_failed_response(self):
-        """When the IIQ API rejects our request, we return exit code 4"""
+        """When the IIQ API rejects our request, we return exit code 5"""
         self.fake_export.return_value = {'msg' : "testing", 'success' : False}
         cli_args = ['--clusters', 'myCluster', '--location', '/some/dir', '--username', 'pat', '--password', 'a']
 
         exit_code = iiqtools_cluster_backup.main(cli_args)
-        expected = 4
+        expected = 5
 
         self.assertEqual(exit_code, expected)
 
