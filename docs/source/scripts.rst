@@ -186,3 +186,97 @@ Installing a patch with ``sudo``::
   2017-10-03 12:54:26,645 - INFO - Restarting InsightIQ
   2017-10-03 12:54:34,098 - INFO - Stopping insightiq:       [  OK  ]
   Starting insightiq:                                        [  OK  ]
+
+
+iiqtools_cluster_backup
+=======================
+
+The point of this tool is to make automating backups of your cluster data easy;
+just setup a `crontab <https://opensource.com/article/17/11/how-use-cron-linux>`_!
+
+InsightIQ supports exporting/importing cluster data, but it requires a user to
+click through the UI. This tool calls the same API as the UI, but instead does
+the API call from the CLI instead of a browser. The API that is called requires
+a user with elevated privileges for the backup to work. Attempting to use a
+read-only user will cause your backups to fail. To be clear, this tool needs an
+admin of InsightIQ, not the host Linux machine running the InsightIQ application.
+
+.. note::
+  It's highly recommend to setup a local user instead of using the default ``administrator``.
+
+
+Setting up the ``iiq_backup`` user account
+------------------------------------------
+
+The default ``administrator`` account used by InsightIQ has ``sudo`` power over the host
+machine running the application. In other words, that account is root by a different name.
+The iiqtools_cluster_backup tool requires a password to be supplied, either as a CLI argument
+or interactively. When setting up a crontab, you must use the CLI argument option.
+This means that the password will be in clear text in the crontab file. **TODO link to stackoverflow** This is the
+main reason that setting up an alternate account is a great idea! All local users
+on the host machine running InsightIQ are by default admin account in the application.
+
+To create the ``iiq_backup`` user account, run the following command::
+
+  [administrator@localhost ~]$ sudo useradd iiq_backup && sudo passwd iiq_backup
+
+
+Usage Examples
+--------------
+
+Here are some examples of using the iiqtools_backup_cluster tool.
+
+Printing available clusters::
+
+  [administrator@localhost ~]$ iiqtools_cluster_backup --show-clusters
+  Clusters monitored by InsightIQ
+  -------------------------------
+    myCluster
+    myOtherCluster
+    isi-nas-01
+
+Interactively supplying the password::
+
+  [administrator@localhost ~]$ iiqtools_cluster_backup --clusters myOtherCluster --location /mnt/backups --username iiq_backup
+  Please enter the password for iiq_backup :
+  Cluster archive underway.
+  To monitor status you can either follow /var/log/insightiq_export_import.log or
+  check the Settings page in the InsightIQ UI.
+
+Backing up to an NFS export::
+
+  [administrator@localhost ~]$ iiqtools_cluster_backup --clusters myCluster --location 10.7.1.2:/ifs/data --username iiq_backup --password a
+  Cluster archive underway.
+  To monitor status you can either follow /var/log/insightiq_export_import.log or
+  check the Settings page in the InsightIQ UI.
+
+Backing up multiple clusters::
+
+  [administrator@localhost ~]$ iiqtools_cluster_backup --clusters myCluster isi-nas-01 --location /mnt/backups --username iiq_backup --password a
+  Cluster archive underway.
+  To monitor status you can either follow /var/log/insightiq_export_import.log or
+  check the Settings page in the InsightIQ UI.
+
+Trying to backup a cluster while the InsightIQ application is offline::
+
+  [administrator@localhost ~]$ iiqtools_cluster_backup --clusters myCluster --location 10.7.1.2:/ifs/data --username iiq_backup --password a
+  ***Unable to communicate with the InsightIQ API***
+  Please verify that the insightiq service is running and try again
+
+
+Crontab Examples
+----------------
+
+This section assumes you've created the ``iiq_backup`` user account.
+
+.. note::
+
+  Only one backup can happen at a time.
+
+Backup every Monday at 1:00 AM ::
+
+  0 1 * * * mon iiqtools_cluster_backup --clusters myCluster myOtherCluster isi-nas-01 --location isi-nas.corp:/ifs/iiq/backups --username iiq_backup --password a
+
+Backup only the cluster you care about, once a month at 2:00 AM ::
+
+  0 2 1 * * * iiqtools_cluster_backup --clusters myCluster --location /mnt/backups --username iiq_backup --password a
