@@ -26,11 +26,10 @@ class TestBufferedZipFile(unittest.TestCase):
         """Runs after every tests case"""
         os.remove(self.filepath)
 
-    @patch.object(iiqtools_tar_to_zip, 'struct')
     @patch.object(iiqtools_tar_to_zip, 'binascii')
-    def test_basic(self, fake_binascii, fake_struct):
+    def test_basic(self, fake_binascii):
         """BufferedZipFile - writebuffered is callable"""
-        self.zipfile.writebuffered(filename='foo', file_handle=self.fake_file)
+        self.zipfile.writebuffered(filename='foo', file_handle=self.fake_file, file_size=9000)
 
 
 class TestCheckTar(unittest.TestCase):

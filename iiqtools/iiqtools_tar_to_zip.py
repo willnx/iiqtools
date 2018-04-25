@@ -10,7 +10,6 @@ the same, it's just a different compression format in InsightIQ 4.1.
 import os
 import re
 import zlib
-import struct
 import tarfile
 import zipfile
 import argparse
@@ -25,7 +24,7 @@ class BufferedZipFile(zipfile.ZipFile):
     stream the contents into a new zip file.
     """
 
-    def writebuffered(self, filename, file_handle):
+    def writebuffered(self, filename, file_handle, file_size):
         """Stream write data to the zip archive
 
         :param filename: **Required** The name to give the data once added to the zip file
@@ -33,35 +32,39 @@ class BufferedZipFile(zipfile.ZipFile):
 
         :param file_handle: **Required** The file-like object to read
         :type file_handle: Anything that supports the `read <https://docs.python.org/2/tutorial/inputoutput.html#methods-of-file-objects>`_ method
+
+        :param file_size: **Required** The size of the file in bytes
+        :type file_size: Integer
         """
         zinfo = zipfile.ZipInfo(filename=filename)
-
-        zinfo.file_size = file_size = 0
+        zinfo.file_size = file_size
         zinfo.flag_bits = 0x00
-        zinfo.header_offset = self.fp.tell()
+        zinfo.header_offset = self.fp.tell()    # Start of header bytes
 
         self._writecheck(zinfo)
         self._didModify = True
-
+        # Must overwrite CRC and sizes with correct data later
         zinfo.CRC = CRC = 0
         zinfo.compress_size = compress_size = 0
-        self.fp.write(zinfo.FileHeader())
+        # Compressed size can be larger than uncompressed size
+        zip64 = self._allowZip64 and \
+                zinfo.file_size * 1.05 > zipfile.ZIP64_LIMIT
+        self.fp.write(zinfo.FileHeader(zip64))
         if zinfo.compress_type == zipfile.ZIP_DEFLATED:
             cmpr = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -15)
         else:
             cmpr = None
 
+        fsize = 0
         while True:
             buf = file_handle.read(1024 * 8)
             if not buf:
                 break
-
-            file_size = file_size + len(buf)
+            fsize = fsize + len(buf)
             CRC = binascii.crc32(buf, CRC) & 0xffffffff
             if cmpr:
                 buf = cmpr.compress(buf)
                 compress_size = compress_size + len(buf)
-
             self.fp.write(buf)
 
         if cmpr:
@@ -70,14 +73,19 @@ class BufferedZipFile(zipfile.ZipFile):
             self.fp.write(buf)
             zinfo.compress_size = compress_size
         else:
-            zinfo.compress_size = file_size
-
+            zinfo.compress_size = fsize
         zinfo.CRC = CRC
-        zinfo.file_size = file_size
-
-        position = self.fp.tell()
-        self.fp.seek(zinfo.header_offset + 14, 0)
-        self.fp.write(struct.pack("<LLL", zinfo.CRC, zinfo.compress_size, zinfo.file_size))
+        zinfo.file_size = fsize
+        if not zip64 and self._allowZip64:
+            if fsize > zipfile.ZIP64_LIMIT:
+                raise RuntimeError('File size has increased during compressing')
+            if compress_size > zipfile.ZIP64_LIMIT:
+                raise RuntimeError('Compressed size larger than uncompressed size')
+        # Seek backwards and write file header (which will now include
+        # correct CRC and file sizes)
+        position = self.fp.tell()       # Preserve current position in file
+        self.fp.seek(zinfo.header_offset, 0)
+        self.fp.write(zinfo.FileHeader(zip64))
         self.fp.seek(position, 0)
         self.filelist.append(zinfo)
         self.NameToInfo[zinfo.filename] = zinfo
@@ -189,7 +197,7 @@ def main(the_cli_args):
         log.info('Converting %s', the_file.name)
         try:
             filename = joinname(zip_export_dir, the_file.name)
-            zip_export.writebuffered(filename=filename, file_handle=file_handle)
+            zip_export.writebuffered(filename=filename, file_handle=file_handle, file_size=the_file.size)
         except (IOError, OSError) as doh:
             log.error(doh)
             log.error('Deleting zip file')
