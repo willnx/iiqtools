@@ -8,9 +8,16 @@ Install and Upgrade
 This section provides directions to install or upgrade the IIQTools package
 for your instance of InsightIQ.
 
-.. note::
+Installing the RPM
+------------------
 
-  The ``--upgrade`` flag is automatically ignored if you're performing an initial install
+This is by far the easiest way to install IIQTools.
+
+1. Download the newest RPM `here <https://github.com/willnx/iiqtools/releases>`_
+#. Copy the RPM file onto the machine running InsightIQ
+#. Install with this command, replacing ``</path/to/rpm>`` with the literal file path::
+
+   $ sudo yum install --disablerepo=* <path/to/rpm>
 
 Installing Python pip
 ---------------------
@@ -20,6 +27,11 @@ of InsightIQ doesn't have pip installed, there are some pretty simple directions
 at:
 
 https://pip.pypa.io/en/stable/installing/
+
+
+.. note::
+
+  The ``--upgrade`` flag is automatically ignored if you're performing an initial install
 
 
 With Internet connection

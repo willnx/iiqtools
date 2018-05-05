@@ -220,6 +220,11 @@ To create the ``iiq_backup`` user account, run the following command::
 
   [administrator@localhost ~]$ sudo useradd iiq_backup && sudo passwd iiq_backup
 
+Once that user is created, you'll have to give them access to the key file::
+
+  [administrator@localhost ~]$ sudo chmod 440 /etc/isilon/secret_key
+  [administrator@localhost ~]$ sudo chown :iiq_backup /etc/isilon/secret_key
+
 
 Usage Examples
 --------------
