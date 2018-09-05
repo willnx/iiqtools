@@ -4,7 +4,10 @@ This module contains all the business logic for creating an archive backup
 of OneFS cluster data within InsightIQ.
 """
 from __future__ import print_function
+import re
+import os
 import json
+import zipfile
 import getpass
 import argparse
 
@@ -21,6 +24,22 @@ except ImportError:
 
 from iiqtools.utils.generic import printerr
 from iiqtools.utils.insightiq_api import InsightiqApi, Parameters, ConnectionError
+
+
+def is_backup_file(value):
+    msg = None
+    regex = re.compile("^insightiq_export_\d{10}.zip")
+    if not os.path.isfile(value):
+        msg = 'Supplied file does not exist: %s' % value
+    elif not zipfile.is_zipfile(value):
+        msg = 'Supplied file is not in zip format: %s' % value
+    elif not regex.search(os.path.basename(value)):
+        msg = 'Supplied file is not a valid InsightIQ backup file'
+
+    if msg is None:
+        return value
+    else:
+        raise argparse.ArgumentTypeError(msg)
 
 
 def parse_args(cli_args):
@@ -40,6 +59,10 @@ def parse_args(cli_args):
         help='A list of clusters that can be backed up')
     mutually_exclusive.add_argument('-c', '--clusters', nargs='+', # at least one value required,
         help='The cluster(s) to back up')
+    mutually_exclusive.add_argument('-a', '--all-clusters', action='store_true',
+        help='Backup all clusters configured within InsightIQ')
+    mutually_exclusive.add_argument('-i', '--inspect', type=is_backup_file,
+        help='List the contents within an existing backup file')
 
     parser.add_argument('-l', '--location',
         help='The NFS mount or local file system location to save the archive file to')
@@ -50,9 +73,9 @@ def parse_args(cli_args):
               "prompted for it; this avoids leaving the password in your shell history")
 
     args = parser.parse_args(cli_args)
-    if args.clusters:
+    if args.clusters or args.all_clusters:
         if not (args.location and args.username):
-            parser.error('-l/--location and --username required when supplying -c/--clusters')
+            parser.error('-l/--location and --username required')
         if not args.password:
             args.password = getpass.getpass('Please enter the password for %s :' % args.username)
     return args
@@ -161,6 +184,49 @@ def export_via_api(supplied_clusters, available_clusters, location, username, pa
     return response.json()
 
 
+def inspect_backup_file(backup_file):
+    """Obtain the clusters and size of each backup within the supplied file
+
+    :Returns: String:
+
+    :param backup_file: **Required** The specific InsightIQ backup file to inspect
+    :type backup_file: String
+    """
+    zip_backup = zipfile.ZipFile(backup_file)
+    info = {}
+    for cluster in zip_backup.infolist():
+        if cluster.filename.endswith('.json'):
+            continue
+        name, _ = os.path.basename(cluster.filename).split('_')
+        info[name] = cluster.file_size
+    return _format_inspect_output(info)
+
+
+def _format_inspect_output(info):
+    """Create a pretty ASCII table from the backup file contents
+
+    :Returns: String
+
+    :param info: **Required** The mapping of cluster name to backup size
+    :type info: Dictionary
+    """
+    longest_name = len(max(info.keys()))
+    biggest_size = len(str(max(info.values())))
+    header_string = ' {:^%s} | {:^%s}' % (longest_name, biggest_size)
+    row_string = ' {:<%s} | {:>%s}' % (longest_name, biggest_size)
+
+    header = header_string.format('Name', 'Bytes')
+    output = [header, '-'] # the - is a placeholder for the seperator
+    for name, size in info.items():
+        output.append(row_string.format(name, size))
+
+    widest_row = len(max(output, key=len))
+    seperator = '-' * widest_row
+    output[1] = seperator
+    output.append('\n') # so there's a space between the table, and the prompt
+    return '\n'.join(output)
+
+
 def main(cli_args):
     """Entry point function for iiq_cluster_backup script
 
@@ -176,17 +242,25 @@ def main(cli_args):
         print(clusters_pretty)
         return 0
 
-    if not supplied_clusters_ok(args.clusters, clusters):
-        # supplied clusters should be a subset of available clusters
-        error = 'Not all supplied clusters available for archiving\n'
-        error += 'Available clusters: %s' % clusters.keys()
-        error += 'Supplied clusters: %s' % args.clusters
-        printerr(error)
-        return 2
+    if args.inspect:
+        print(inspect_backup_file(args.inspect))
+        return 0
+
+    if args.all_clusters:
+        to_backup = list(get_clusters_in_iiq().keys())
+    else:
+        to_backup = args.clusters
+        if not supplied_clusters_ok(args.clusters, clusters):
+            # supplied clusters should be a subset of available clusters
+            error = 'Not all supplied clusters available for archiving\n'
+            error += 'Available clusters: %s' % clusters.keys()
+            error += 'Supplied clusters: %s' % args.clusters
+            printerr(error)
+            return 2
 
     # things look good, let's export that data!
     try:
-        result = export_via_api(args.clusters, clusters, args.location, args.username, args.password)
+        result = export_via_api(to_backup, clusters, args.location, args.username, args.password)
     except ValueError as doh:
         # If the API calls causes IIQ to generate a 4xy or 5xy response, we get HTML
         # instead of JSON. Failure to convert the response to JSON raises ValueError

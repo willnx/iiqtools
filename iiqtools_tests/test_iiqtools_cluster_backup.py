@@ -77,6 +77,65 @@ class TestClusterBackupCliArgs(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
+    def test_all_clusters(self):
+        """parse_args support the ``--all-clusters`` argument"""
+        cli_args = ['--all-clusters', '--location', '/foo', '--username', 'alice', '--password', 'a']
+
+        result = iiqtools_cluster_backup.parse_args(cli_args)
+
+        expected = True
+        actual = result.all_clusters
+
+        self.assertEqual(expected, actual)
+
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    def test_inspect(self, fake_isfile, fake_is_zipfile):
+        """parse_args supports the ``--inspect`` argument"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = True
+        cli_args = ['--inspect', 'insightiq_export_1234567890.zip']
+
+        result = iiqtools_cluster_backup.parse_args(cli_args)
+
+        expected = 'insightiq_export_1234567890.zip'
+        actual = result.inspect
+
+        self.assertEqual(expected, actual)
+
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    def test_inspect_is_file(self, fake_isfile, fake_is_zipfile):
+        """parse_args - The ``--inspect`` argument raises SystemExit if the value is not a file"""
+        fake_isfile.return_value = False
+        fake_is_zipfile.return_value = True
+        cli_args = ['--inspect', 'insightiq_export_1234567890.zip']
+
+        with self.assertRaises(SystemExit):
+            iiqtools_cluster_backup.parse_args(cli_args)
+
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    def test_inspect_is_zipfile(self, fake_isfile, fake_is_zipfile):
+        """parse_args - The ``--inspect`` argument raises SystemExit if the value is not a zipfile"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = False
+        cli_args = ['--inspect', 'insightiq_export_1234567890.zip']
+
+        with self.assertRaises(SystemExit):
+            iiqtools_cluster_backup.parse_args(cli_args)
+
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    def test_inspect_bad_name(self, fake_isfile, fake_is_zipfile):
+        """parse_args - The ``--inspect`` argument raises SystemExit if the value is not correctly named"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = True
+        cli_args = ['--inspect', 'insightiq_export_123.zip']
+
+        with self.assertRaises(SystemExit):
+            iiqtools_cluster_backup.parse_args(cli_args)
+
 
 class TestClusterBackupGetClusters(unittest.TestCase):
     """A suite of test cases for the get_clusters_in_iiq function"""
@@ -202,6 +261,19 @@ class TestClusterBackupExport(unittest.TestCase):
                                                         self.username,
                                                         self.password)
         self.fake_InsightiqApi.assert_called()
+
+
+class TestFormatInspectOutput(unittest.TestCase):
+    """A suite of tests for the ``_format_inspect_output`` function"""
+
+    def test_output(self):
+        """TODO"""
+        info = {'isi01': 1234, 'isi02': 12341234}
+
+        result = iiqtools_cluster_backup._format_inspect_output(info)
+        expected = ' Name  |  Bytes  \n-----------------\n isi01 |     1234\n isi02 | 12341234\n\n'
+
+        self.assertEqual(result, expected)
 
 
 class TestClusterBackupMain(unittest.TestCase):
