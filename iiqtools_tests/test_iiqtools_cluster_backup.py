@@ -206,24 +206,24 @@ class TestClusterBackupCleanupBackups(unittest.TestCase):
 
         self.assertEqual(removed_path, expexted_args)
 
-@patch.object(iiqtools_cluster_backup, 'printerr')
-@patch.object(iiqtools_cluster_backup.os.path, 'isfile')
-@patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
-@patch.object(iiqtools_cluster_backup.os, 'remove')
-@patch.object(iiqtools_cluster_backup.os, 'listdir')
-def test_logs_failure(self, fake_listdir, fake_remove, fake_is_zipfile, fake_isfile, fake_printerr):
-    """Logs failure to delete old backup"""
-    fake_isfile.return_value = True
-    fake_is_zipfile.return_value = True
-    fake_listdir.return_value = ['insightiq_export_1234567890.zip', 'insightiq_export_2345678901.zip']
-    fake_remove.side_effect = RuntimeError('Testing')
+    @patch.object(iiqtools_cluster_backup, 'printerr')
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os, 'remove')
+    @patch.object(iiqtools_cluster_backup.os, 'listdir')
+    def test_logs_failure(self, fake_listdir, fake_remove, fake_is_zipfile, fake_isfile, fake_printerr):
+        """Logs failure to delete old backup"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = True
+        fake_listdir.return_value = ['insightiq_export_1234567890.zip', 'insightiq_export_2345678901.zip']
+        fake_remove.side_effect = RuntimeError('Testing')
 
-    iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=1)
+        iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=1)
 
-    failures_logged = fake_printerr.call_count
-    expected_logged = 2
+        failures_logged = fake_printerr.call_count
+        expected_logged = 1
 
-    self.assertEqual(failures_logged, expected_logged)
+        self.assertEqual(failures_logged, expected_logged)
 
 
 class TestClusterBackupGetClusters(unittest.TestCase):
