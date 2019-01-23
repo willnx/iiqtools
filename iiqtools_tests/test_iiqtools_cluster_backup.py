@@ -137,6 +137,95 @@ class TestClusterBackupCliArgs(unittest.TestCase):
             iiqtools_cluster_backup.parse_args(cli_args)
 
 
+class TestClusterBackupCleanupBackups(unittest.TestCase):
+    """A suite of test cases for the _cleanup_backups function"""
+
+    @patch.object(iiqtools_cluster_backup, 'os')
+    def test_max_backups_zero(self, fake_os):
+        """Returns None and bails earily when param max_backups is zero"""
+        result = iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=0)
+        expected = None
+
+        listdir_calls = fake_os.listdir.call_count
+        expected_calls = 0
+
+        self.assertEqual(result, expected)
+        self.assertEqual(listdir_calls, expected_calls)
+
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    @patch.object(iiqtools_cluster_backup.os, 'remove')
+    @patch.object(iiqtools_cluster_backup.os, 'listdir')
+    def test_no_backups_found(self, fake_listdir, fake_remove, fake_isfile):
+        """Nothing is deleted if there are no backups files found"""
+        fake_isfile.return_value = True
+        fake_listdir.return_value = ['somefile.txt', 'anotherfile.txt']
+
+        result = iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=10)
+        expected = None
+
+        remove_calls = fake_remove.call_count
+        expected_calls = 0
+
+        self.assertEqual(result, expected)
+        self.assertEqual(remove_calls, expected_calls)
+
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os, 'remove')
+    @patch.object(iiqtools_cluster_backup.os, 'listdir')
+    def test_backups_equal_max(self, fake_listdir, fake_remove, fake_is_zipfile, fake_isfile):
+        """Nothing is deleted if the number of backups found equals the max_backups param"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = True
+        fake_listdir.return_value = ['insightiq_export_1234567890.zip', 'insightiq_export_2345678901.zip']
+
+        result = iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=2)
+        expected = None
+
+        remove_calls = fake_remove.call_count
+        expected_calls = 0
+
+        self.assertEqual(result, expected)
+        self.assertEqual(remove_calls, expected_calls)
+
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os, 'remove')
+    @patch.object(iiqtools_cluster_backup.os, 'listdir')
+    def test_deletes_oldest(self, fake_listdir, fake_remove, fake_is_zipfile, fake_isfile):
+        """Oldest backups are deleted"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = True
+        fake_listdir.return_value = ['insightiq_export_1234567890.zip', 'insightiq_export_2345678901.zip']
+
+        iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=1)
+
+        the_args, the_kwargs = fake_remove.call_args
+        removed_path = the_args[0]
+        expexted_args = '/tmp/insightiq_export_1234567890.zip'
+
+        self.assertEqual(removed_path, expexted_args)
+
+    @patch.object(iiqtools_cluster_backup, 'printerr')
+    @patch.object(iiqtools_cluster_backup.os.path, 'isfile')
+    @patch.object(iiqtools_cluster_backup.zipfile, 'is_zipfile')
+    @patch.object(iiqtools_cluster_backup.os, 'remove')
+    @patch.object(iiqtools_cluster_backup.os, 'listdir')
+    def test_logs_failure(self, fake_listdir, fake_remove, fake_is_zipfile, fake_isfile, fake_printerr):
+        """Logs failure to delete old backup"""
+        fake_isfile.return_value = True
+        fake_is_zipfile.return_value = True
+        fake_listdir.return_value = ['insightiq_export_1234567890.zip', 'insightiq_export_2345678901.zip']
+        fake_remove.side_effect = RuntimeError('Testing')
+
+        iiqtools_cluster_backup._cleanup_backups(location='/tmp', max_backups=1)
+
+        failures_logged = fake_printerr.call_count
+        expected_logged = 1
+
+        self.assertEqual(failures_logged, expected_logged)
+
+
 class TestClusterBackupGetClusters(unittest.TestCase):
     """A suite of test cases for the get_clusters_in_iiq function"""
 

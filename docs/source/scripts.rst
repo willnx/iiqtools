@@ -268,6 +268,18 @@ Trying to backup a cluster while the InsightIQ application is offline::
   ***Unable to communicate with the InsightIQ API***
   Please verify that the insightiq service is running and try again
 
+Limiting the number of historic backup files to 6::
+
+  [administrator@localhost ~]$ iiqtools_cluster_backup --max-backups 6--clusters myCluster isi-nas-01 --location /mnt/backups --username iiq_backup --password a
+
+.. note::
+
+  The ``--max-backups`` argument only deletes an old backup if the existing number
+  of backups *before* starting a new backup is larger than the supplied value.
+  For example, if you set ``--max-backups`` to 4 and the directory you are backing
+  up to already has 4 previous backups, then (assuming the backup completes successfully)
+  you will have a grand total of 5 backups in that directory.
+
 
 Crontab Examples
 ----------------

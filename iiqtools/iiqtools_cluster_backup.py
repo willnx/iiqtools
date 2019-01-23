@@ -71,6 +71,9 @@ def parse_args(cli_args):
     parser.add_argument('-p', '--password',
         help="The Administrative user's password. If not supplied, you will be "
               "prompted for it; this avoids leaving the password in your shell history")
+    parser.add_argument('-m', '--max-backups', type=int, default=0,
+        help="The maximum number of backups (count) to retain before starting a new job."
+             "A value of zero means *never* delete old backups")
 
     args = parser.parse_args(cli_args)
     if args.clusters or args.all_clusters:
@@ -227,6 +230,47 @@ def _format_inspect_output(info):
     return '\n'.join(output)
 
 
+def _cleanup_backups(location, max_backups):
+    """Automate deletion of oldest backups, so the user doesn't have to.
+
+    :Returns: None
+
+    :param location: The directory used for storing IIQ cluster backups
+    :type location: String
+
+    :param max_backups: The maximum number of backups to retain
+    :type max_backups: Integer
+    """
+    if max_backups == 0:
+        print('Max backups set to zero, never deleting backups.')
+        return
+    backups_found = []
+    for each_file in os.listdir(location):
+        try:
+            is_backup_file(os.path.join(location, each_file))
+        except argparse.ArgumentTypeError:
+            continue
+        else:
+            backups_found.append(each_file)
+    # Might be negative, so floor to zero for better message
+    extra_backups = max(len(backups_found) - max_backups, 0)
+    print('Found {} extra backups to delete'.format(extra_backups))
+    if extra_backups > 0:
+        to_delete = []
+        # so the oldest is at the start of the list
+        backups_found = sorted(backups_found, key=lambda x: int(x.split('_')[2].replace('.zip', '')))
+        for idx in range(extra_backups):
+            old_backup = backups_found.pop(idx)
+            to_delete.append(old_backup)
+        for expired_backup in to_delete:
+            old_backup_path = os.path.join(location, expired_backup)
+            print('Deleting {}'.format(old_backup_path))
+            try:
+                os.remove(old_backup_path)
+            except Exception as doh:
+                printerr("Failed to delete backup {}. Error: {}".format(old_backup_path, doh))
+
+
 def main(cli_args):
     """Entry point function for iiq_cluster_backup script
 
@@ -259,6 +303,7 @@ def main(cli_args):
             return 2
 
     # things look good, let's export that data!
+    _cleanup_backups(location=args.location, max_backups=args.max_backups)
     try:
         result = export_via_api(to_backup, clusters, args.location, args.username, args.password)
     except ValueError as doh:
